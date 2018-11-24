@@ -1,0 +1,34 @@
+{
+  "defaultSeverity": "error",
+  "extends": [
+    "tslint:recommended"
+  ],
+  "jsRules": {},
+  "rules": {
+    "prefer-const": true,
+    "no-console": true,
+    "no-shadowed-variable": true,
+    "no-any": false,
+    "no-misused-new": true,
+    "no-switch-case-fall-through": true,
+    "no-var-keyword": true,
+    "semicolon": {
+      "options": [
+        "always"
+      ]
+    },
+    "quotemark": {
+      "options": [
+        "single"
+      ]
+    },
+    "variable-name": {
+      "options": [
+        "ban-keywords",
+        "check-format",
+        "allow-pascal-case"
+      ]
+    }
+  },
+  "rulesDirectory": []
+}
