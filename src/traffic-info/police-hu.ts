@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import { get, zip } from 'lodash';
+import { zip } from 'lodash';
 
 const POLICE_HU_INFO_BASE_URL = 'http://www.police.hu/hu/hirek-es-informaciok/hatarinfo';
 
@@ -31,29 +31,35 @@ function infoUrlForCountry(country: NeighboringCountry): string {
   return `${POLICE_HU_INFO_BASE_URL}${CROSSING_INFO_QUERY_PARAMS[country]}`;
 }
 
-function extractLocationNames(crossingText: string) {
+function extractLocationNames(crossingText: string): [string, string] {
   // example input to clean up 'Bácsalmás - Bajmok-'
   // remove trailing '-', since we want to split into two parts using the remaining '-' char
   const text = crossingText.substring(0, crossingText.length - 1);
   let crossingParts = text.split('-');
   const EXPECTED_NUMBER_OF_NAME_SEGMENTS = 2;
-  if (crossingParts.length !== EXPECTED_NUMBER_OF_NAME_SEGMENTS) {
-    // in some cases the '–' charachter is used, try splitting based on that.
+
+  if (crossingParts.length > EXPECTED_NUMBER_OF_NAME_SEGMENTS) {
+    // there a crossings with wierd name, such as'Hegyeshalom-Nickelsdorf közút (1-es főút)'
+    // in such a case we just make sure to concatanate the second and remaining parts into 1 segment
+    const [first, ...rest] = crossingParts;
+    crossingParts = [first, rest.join('-')];
+  }
+
+  if (crossingParts.length < EXPECTED_NUMBER_OF_NAME_SEGMENTS) {
+    // in some cases the '–' charachter is used, so we try splitting based on that.
     // an example for this is 'Bácsszentgyörgy–Raština '
     crossingParts = text.split('–');
   }
 
   // at this point, if we still don't have the expected number of segments something went wrong
-  if (crossingParts.length !== EXPECTED_NUMBER_OF_NAME_SEGMENTS) {
+  if (crossingParts.length < EXPECTED_NUMBER_OF_NAME_SEGMENTS) {
+    // FIXME: change this to log an error and return the whole text instead. that would be a more resilient approach
     throw new Error(`Unable to parse crossing name for text:${text}`);
   }
 
   const CROSSING_FROM_INDEX = 0;
   const CROSSING_TO_INDEX = 1;
-  return {
-    from: crossingParts[CROSSING_FROM_INDEX].trim(),
-    to: crossingParts[CROSSING_TO_INDEX].trim()
-  };
+  return [crossingParts[CROSSING_FROM_INDEX].trim(), crossingParts[CROSSING_TO_INDEX].trim()];
 }
 
 export function parseCrossingNames(htmlContent: string) {
@@ -125,11 +131,11 @@ function parseContent(content: string): CrossingEntry[] {
   }
 
   const entries = zip(crossingNames, crossingOpenHours, crossingWaitTimes).map(
-    ([names, openHours, waitTime]) => ({
-      from: get(names, 'from', ''),
-      to: get(names, 'to', ''),
-      openHours: openHours || '',
-      waitTime: waitTime || { car: '', bus: '', truck: '' }
+    ([[from, to] = ['', ''], openHours = '', waitTime = { car: '', bus: '', truck: '' }]) => ({
+      from,
+      to,
+      openHours,
+      waitTime
     })
   );
 
