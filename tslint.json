@@ -12,6 +12,9 @@
     "no-misused-new": true,
     "no-switch-case-fall-through": true,
     "no-var-keyword": true,
+    "trailing-comma": false,
+    "object-literal-sort-keys": false,
+    "interface-name": [true, "never-prefix"],
     "semicolon": {
       "options": [
         "always"
