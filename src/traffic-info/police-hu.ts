@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import { zip } from 'lodash';
+import { isEmpty, zip } from 'lodash';
 
 const POLICE_HU_INFO_BASE_URL = 'http://www.police.hu/hu/hirek-es-informaciok/hatarinfo';
 
@@ -23,7 +23,8 @@ export interface WaitTime {
 export interface CrossingEntry {
   from: string;
   to: string;
-  openHours: string;
+  openFrom: string;
+  openUntil: string;
   waitTime: WaitTime;
 }
 
@@ -73,12 +74,25 @@ export function parseCrossingNames(htmlContent: string) {
   return crossingTexts.map(extractLocationNames);
 }
 
-export function parseOpenHours(htmlContent: string) {
+function parseWorkingHours(text: string): [string, string] {
+  const [open, close, ...rest] = text.split('-');
+  if (!isEmpty(rest)) {
+    throw new Error(`Error occured during the parsing of working hours: ${text}`);
+  }
+  return [
+    open.trim().replace('.', ':'),
+    close.trim().replace('.', ':')
+  ];
+}
+
+export function parseOpenHours(htmlContent: string): Array<[string, string]> {
   const $ = cheerio.load(htmlContent);
 
-  return $('#borderinfo-accordions a > span:nth-of-type(2)').map(function(this: Cheerio) {
+  const hoursText = $('#borderinfo-accordions a > span:nth-of-type(2)').map(function(this: Cheerio) {
     return $(this).text();
   }).get();
+
+  return hoursText.map(parseWorkingHours);
 }
 
 export function parseWaitTimes(htmlContent: string): WaitTime[] {
@@ -131,10 +145,11 @@ function parseContent(content: string): CrossingEntry[] {
   }
 
   const entries = zip(crossingNames, crossingOpenHours, crossingWaitTimes).map(
-    ([[from, to] = ['', ''], openHours = '', waitTime = { car: '', bus: '', truck: '' }]) => ({
+    ([[from, to] = ['', ''], [openFrom, openUntil] = ['', ''], waitTime = { car: '', bus: '', truck: '' }]) => ({
       from,
       to,
-      openHours,
+      openFrom,
+      openUntil,
       waitTime
     })
   );

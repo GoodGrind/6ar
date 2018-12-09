@@ -1,9 +1,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { promisify } from 'util';
-import { parseCrossingNames } from '../../traffic-info/police-hu';
+import { parseCrossingNames, parseOpenHours } from '../../traffic-info/police-hu';
 
 const readFile = promisify(fs.readFile);
+
+const NUMBER_OF_CROSSINGS_TO_SERBIA = 8;
 
 test('test Ukraine crossing name parsing', async () => {
   const htmlPath = path.join(__dirname, 'police-hu-info-ukraine.html');
@@ -41,7 +43,6 @@ test('test Serbian crossing name parsing', async () => {
   const htmlPath = path.join(__dirname, 'police-hu-info-serbia.html');
   const policeHuHtml = await readFile(htmlPath, { encoding: 'utf-8' });
   const names = parseCrossingNames(policeHuHtml);
-  const NUMBER_OF_CROSSINGS_TO_SERBIA = 8;
   expect(names.length).toBe(NUMBER_OF_CROSSINGS_TO_SERBIA);
   expect(names[0]).toEqual(['Ásotthalom', 'Backi Vinogradi']);
   expect(names[1]).toEqual(['Bácsalmás', 'Bajmok']);
@@ -88,4 +89,18 @@ test('test Austrian crossing name parsing', async () => {
   expect(names[11]).toEqual(['Sopron', 'Klingenbach']);
   expect(names[12]).toEqual(['Szentpéterfa', 'Eberau']);
   expect(names[13]).toEqual(['Zsira', 'Lutzmannsburg']);
+});
+
+test('parsing of open hours', async () => {
+  const htmlPath = path.join(__dirname, 'police-hu-info-serbia.html');
+  const policeHuHtml = await readFile(htmlPath, { encoding: 'utf-8' });
+  const openHours = parseOpenHours(policeHuHtml);
+  expect(openHours.length).toBe(NUMBER_OF_CROSSINGS_TO_SERBIA);
+  expect(openHours[0]).toEqual(['07:00', '19:00']);
+  expect(openHours[1]).toEqual(['07:00', '19:00']);
+  expect(openHours[2]).toEqual(['07:00', '19:00']);
+  expect(openHours[3]).toEqual(['00:00', '24:00']);
+  expect(openHours[4]).toEqual(['00:00', '24:00']);
+  expect(openHours[5]).toEqual(['07:00', '19:00']);
+  expect(openHours[6]).toEqual(['07:00', '19:00']);
 });
