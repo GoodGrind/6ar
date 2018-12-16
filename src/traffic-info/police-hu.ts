@@ -20,12 +20,19 @@ export interface QueueTime {
   truck: string;
 }
 
+const NO_QUEUE = Object.freeze({
+  car: '',
+  bus: '',
+  truck: ''
+});
+
 export interface CrossingEntry {
   from: string;
   to: string;
   openFrom: string;
   openUntil: string;
-  queueTime: QueueTime;
+  inbound: QueueTime;
+  outbound: QueueTime;
 }
 
 function infoUrlForCountry(country: NeighboringCountry): string {
@@ -95,24 +102,41 @@ export function parseOpenHours(htmlContent: string): Array<[string, string]> {
   return hoursText.map(parseWorkingHours);
 }
 
-export function parseQueueTimes(htmlContent: string): QueueTime[] {
+export function parseQueueTimes(htmlContent: string): Array<{ inbound: QueueTime, outbound: QueueTime }> {
   const $ = cheerio.load(htmlContent);
 
-  return $('#borderinfo-accordions div.row').map(function(this: Cheerio) {
+  // Forced casting is needed here, since Cheerio's type definition for 'get' doesn't take into account mapping,
+  // and always returns a string.
+  function extractQueueText(this: Cheerio): { inbound: QueueTime, outbound: QueueTime } {
     const $queue = $(this);
 
     // Find DOM entries that contain the inbound traffic information
-    const $inTraffic = $queue.find('div.col-md-3:first-of-type > div:not(.label)');
+    const $outTraffic = $queue.find('div.col-md-3:first-of-type > div:not(.label)');
 
-    // FIXME: parse out traffic as well
-    // const outTraffic = $wait.find('div > div:nth-of-type(2)').text();
+    const $inTraffic = $queue.find('div.col-md-3:nth-of-type(2) > div:not(.label)');
 
-    return $inTraffic.map(function(this: Cheerio) {
+    const [outbound, ...restOut] = $outTraffic.map(function(this: Cheerio) {
       return parseTrafficEntries($(this));
-    }).get();
-    // Forced casting is needed here, since Cheerio's type definition for 'get' doesn't take into account mapping,
-    // and always returns a string.
-  }).get() as any as QueueTime[];
+    }).get() as any as QueueTime[];
+    if (!isEmpty(restOut)) {
+      throw new Error(`Error occured during the parsing of outbound traffic\n: ${htmlContent}`);
+    }
+
+    const [inbound, ...restIn] = $inTraffic.map(function(this: Cheerio) {
+      return parseTrafficEntries($(this));
+    }).get() as any as QueueTime[];
+    if (!isEmpty(restIn)) {
+      throw new Error(`Error occured during the parsing of inbound traffic\n: ${htmlContent}`);
+    }
+
+    return {
+      inbound,
+      outbound
+    };
+  }
+
+  return $('#borderinfo-accordions div.row')
+    .map(extractQueueText).get() as any as Array<{ inbound: QueueTime, outbound: QueueTime }>;
 }
 
 function parseTrafficEntries($traffic: Cheerio): QueueTime {
@@ -147,12 +171,17 @@ function parseContent(content: string): CrossingEntry[] {
   }
 
   const entries = zip(crossingNames, crossingOpenHours, crossingQueueTimes).map(
-    ([[from, to] = ['', ''], [openFrom, openUntil] = ['', ''], queueTime = { car: '', bus: '', truck: '' }]) => ({
+    ([
+      [from, to] = ['', ''],
+      [openFrom, openUntil] = ['', ''],
+      { inbound, outbound } = { inbound: NO_QUEUE, outbound: NO_QUEUE }
+    ]) => ({
       from,
       to,
       openFrom,
       openUntil,
-      queueTime
+      inbound,
+      outbound
     })
   );
 

@@ -1,11 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { promisify } from 'util';
-import { parseCrossingNames, parseOpenHours } from '../../traffic-info/police-hu';
+import { parseCrossingNames, parseOpenHours, parseQueueTimes } from '../../traffic-info/police-hu';
 
 const readFile = promisify(fs.readFile);
 
 const NUMBER_OF_CROSSINGS_TO_SERBIA = 8;
+const NUMBER_OF_CROSSINGS_TO_UKRAINE = 5;
 
 test('test Ukraine crossing name parsing', async () => {
   const htmlPath = path.join(__dirname, 'police-hu-info-ukraine.html');
@@ -103,4 +104,26 @@ test('parsing of open hours', async () => {
   expect(openHours[4]).toEqual(['00:00', '24:00']);
   expect(openHours[5]).toEqual(['07:00', '19:00']);
   expect(openHours[6]).toEqual(['07:00', '19:00']);
+});
+
+test('parsing of queue times', async () => {
+  const htmlPath = path.join(__dirname, 'police-hu-info-ukraine.html');
+  const policeHuHtml = await readFile(htmlPath, { encoding: 'utf-8' });
+  const queueTimes = parseQueueTimes(policeHuHtml);
+  expect(queueTimes.length).toBe(NUMBER_OF_CROSSINGS_TO_UKRAINE);
+  expect(queueTimes[0]).toEqual(
+    { inbound: { car: '', bus: '', truck: '' }, outbound: { car: '', bus: '', truck: '' } }
+  );
+  expect(queueTimes[1]).toEqual(
+    { inbound: { car: '1 óra', bus: '', truck: '' }, outbound: { car: '1/2 óra', bus: '', truck: '' } }
+  );
+  expect(queueTimes[2]).toEqual(
+    { inbound: { car: '', bus: '', truck: '' }, outbound: { car: '', bus: '', truck: '' } }
+  );
+  expect(queueTimes[3]).toEqual(
+    { inbound: { car: '', bus: '', truck: '' }, outbound: { car: '', bus: '', truck: '' } }
+  );
+  expect(queueTimes[4]).toEqual(
+    { inbound: { car: '1 óra', bus: '', truck: '' }, outbound: { car: '1 óra', bus: '', truck: '2 óra' } }
+  );
 });
