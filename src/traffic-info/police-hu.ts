@@ -14,7 +14,7 @@ const CROSSING_INFO_QUERY_PARAMS = Object.freeze({
 
 export type NeighboringCountry = keyof typeof CROSSING_INFO_QUERY_PARAMS;
 
-export interface WaitTime {
+export interface QueueTime {
   car: string;
   bus: string;
   truck: string;
@@ -25,7 +25,7 @@ export interface CrossingEntry {
   to: string;
   openFrom: string;
   openUntil: string;
-  waitTime: WaitTime;
+  queueTime: QueueTime;
 }
 
 function infoUrlForCountry(country: NeighboringCountry): string {
@@ -95,27 +95,29 @@ export function parseOpenHours(htmlContent: string): Array<[string, string]> {
   return hoursText.map(parseWorkingHours);
 }
 
-export function parseWaitTimes(htmlContent: string): WaitTime[] {
+export function parseQueueTimes(htmlContent: string): QueueTime[] {
   const $ = cheerio.load(htmlContent);
 
   return $('#borderinfo-accordions div.row').map(function(this: Cheerio) {
-    const $wait = $(this);
+    const $queue = $(this);
 
     // Find DOM entries that contain the inbound traffic information
-    const $inTraffic = $wait.find('div.col-md-3:first-of-type > div:not(.label)');
-    //    const outTraffic = $wait.find('div > div:nth-of-type(2)').text();
+    const $inTraffic = $queue.find('div.col-md-3:first-of-type > div:not(.label)');
+
+    // FIXME: parse out traffic as well
+    // const outTraffic = $wait.find('div > div:nth-of-type(2)').text();
 
     return $inTraffic.map(function(this: Cheerio) {
       return parseTrafficEntries($(this));
     }).get();
     // Forced casting is needed here, since Cheerio's type definition for 'get' doesn't take into account mapping,
     // and always returns a string.
-  }).get() as any as WaitTime[];
+  }).get() as any as QueueTime[];
 }
 
-function parseTrafficEntries($traffic: Cheerio): WaitTime {
-  // Traffic entry DOM tree contains child div entries for specific traffic wait time entires
-  // No div entries, means no wait time for anything.
+function parseTrafficEntries($traffic: Cheerio): QueueTime {
+  // Traffic entry DOM tree contains child div entries for specific traffic queue time entires
+  // No div entries, means no queue time for anything.
   const car = $traffic.children('div.szgk').text();
   const bus = $traffic.children('div.busz').text();
   const truck = $traffic.children('div.tgk').text();
@@ -130,27 +132,27 @@ function parseTrafficEntries($traffic: Cheerio): WaitTime {
 function parseContent(content: string): CrossingEntry[] {
   const crossingNames = parseCrossingNames(content);
   const crossingOpenHours = parseOpenHours(content);
-  const crossingWaitTimes = parseWaitTimes(content);
+  const crossingQueueTimes = parseQueueTimes(content);
 
   const sameNumberOfEntries =
     crossingNames.length === crossingOpenHours.length &&
-    crossingNames.length === crossingWaitTimes.length;
+    crossingNames.length === crossingQueueTimes.length;
   if (!sameNumberOfEntries) {
     const parsedData = {
       crossingNames,
       crossingOpenHours,
-      crossingWaitTimes
+      crossingQueueTimes
     };
     throw new Error(`Different number of parsed entries, got: ${JSON.stringify(parsedData)}`);
   }
 
-  const entries = zip(crossingNames, crossingOpenHours, crossingWaitTimes).map(
-    ([[from, to] = ['', ''], [openFrom, openUntil] = ['', ''], waitTime = { car: '', bus: '', truck: '' }]) => ({
+  const entries = zip(crossingNames, crossingOpenHours, crossingQueueTimes).map(
+    ([[from, to] = ['', ''], [openFrom, openUntil] = ['', ''], queueTime = { car: '', bus: '', truck: '' }]) => ({
       from,
       to,
       openFrom,
       openUntil,
-      waitTime
+      queueTime
     })
   );
 
