@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { promisify } from 'util';
-import { parseCrossingNames, parseOpenHours, parseQueueTimes } from '../../traffic-info/police-hu';
+import { extractCrossingNames, extractOpenHours, extractQueueTimes } from '../../traffic-info/police-hu';
 
 const readFile = promisify(fs.readFile);
 
@@ -11,7 +11,7 @@ const NUMBER_OF_CROSSINGS_TO_UKRAINE = 5;
 test('test Ukraine crossing name parsing', async () => {
   const htmlPath = path.join(__dirname, 'police-hu-info-ukraine.html');
   const policeHuHtml = await readFile(htmlPath, { encoding: 'utf-8' });
-  const names = parseCrossingNames(policeHuHtml);
+  const names = extractCrossingNames(policeHuHtml);
   const NUMBER_OF_CROSSINGS_TO_UKRAINE = 5;
   expect(names.length).toBe(NUMBER_OF_CROSSINGS_TO_UKRAINE);
   expect(names[0]).toEqual(['Barabás', 'Koson’']);
@@ -24,7 +24,7 @@ test('test Ukraine crossing name parsing', async () => {
 test('test Romanian crossing name parsing', async () => {
   const htmlPath = path.join(__dirname, 'police-hu-info-romania.html');
   const policeHuHtml = await readFile(htmlPath, { encoding: 'utf-8' });
-  const names = parseCrossingNames(policeHuHtml);
+  const names = extractCrossingNames(policeHuHtml);
   const NUMBER_OF_CROSSINGS_TO_ROMANIA = 11;
   expect(names.length).toBe(NUMBER_OF_CROSSINGS_TO_ROMANIA);
   expect(names[0]).toEqual(['Ártánd', 'Borş']);
@@ -43,7 +43,7 @@ test('test Romanian crossing name parsing', async () => {
 test('test Serbian crossing name parsing', async () => {
   const htmlPath = path.join(__dirname, 'police-hu-info-serbia.html');
   const policeHuHtml = await readFile(htmlPath, { encoding: 'utf-8' });
-  const names = parseCrossingNames(policeHuHtml);
+  const names = extractCrossingNames(policeHuHtml);
   expect(names.length).toBe(NUMBER_OF_CROSSINGS_TO_SERBIA);
   expect(names[0]).toEqual(['Ásotthalom', 'Backi Vinogradi']);
   expect(names[1]).toEqual(['Bácsalmás', 'Bajmok']);
@@ -58,7 +58,7 @@ test('test Serbian crossing name parsing', async () => {
 test('test Croatian crossing name parsing', async () => {
   const htmlPath = path.join(__dirname, 'police-hu-info-croatia.html');
   const policeHuHtml = await readFile(htmlPath, { encoding: 'utf-8' });
-  const names = parseCrossingNames(policeHuHtml);
+  const names = extractCrossingNames(policeHuHtml);
   const NUMBER_OF_CROSSINGS_TO_CROATIA = 7;
   expect(names.length).toBe(NUMBER_OF_CROSSINGS_TO_CROATIA);
   expect(names[0]).toEqual(['Barcs', 'Terezino Polje']);
@@ -73,7 +73,7 @@ test('test Croatian crossing name parsing', async () => {
 test('test Austrian crossing name parsing', async () => {
   const htmlPath = path.join(__dirname, 'police-hu-info-austria.html');
   const policeHuHtml = await readFile(htmlPath, { encoding: 'utf-8' });
-  const names = parseCrossingNames(policeHuHtml);
+  const names = extractCrossingNames(policeHuHtml);
   const NUMBER_OF_CROSSINGS_TO_AUSTRIA = 14;
   expect(names.length).toBe(NUMBER_OF_CROSSINGS_TO_AUSTRIA);
   expect(names[0]).toEqual(['Bozsok', 'Rechnitz']);
@@ -95,7 +95,7 @@ test('test Austrian crossing name parsing', async () => {
 test('parsing of open hours', async () => {
   const htmlPath = path.join(__dirname, 'police-hu-info-serbia.html');
   const policeHuHtml = await readFile(htmlPath, { encoding: 'utf-8' });
-  const openHours = parseOpenHours(policeHuHtml);
+  const openHours = extractOpenHours(policeHuHtml);
   expect(openHours.length).toBe(NUMBER_OF_CROSSINGS_TO_SERBIA);
   expect(openHours[0]).toEqual(['07:00', '19:00']);
   expect(openHours[1]).toEqual(['07:00', '19:00']);
@@ -109,7 +109,7 @@ test('parsing of open hours', async () => {
 test('parsing of queue times', async () => {
   const htmlPath = path.join(__dirname, 'police-hu-info-ukraine.html');
   const policeHuHtml = await readFile(htmlPath, { encoding: 'utf-8' });
-  const queueTimes = parseQueueTimes(policeHuHtml);
+  const queueTimes = extractQueueTimes(policeHuHtml);
   expect(queueTimes.length).toBe(NUMBER_OF_CROSSINGS_TO_UKRAINE);
   expect(queueTimes[0]).toEqual(
     { inbound: { car: '', bus: '', truck: '' }, outbound: { car: '', bus: '', truck: '' } }

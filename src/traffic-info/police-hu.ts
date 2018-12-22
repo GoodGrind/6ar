@@ -1,10 +1,13 @@
-import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { isEmpty, zip } from 'lodash';
 
 const POLICE_HU_INFO_BASE_URL = 'http://www.police.hu/hu/hirek-es-informaciok/hatarinfo';
 
-const CROSSING_INFO_QUERY_PARAMS = Object.freeze({
+export type Countries = 'Ukraine' | 'Romania' | 'Serbia' | 'Croatia' | 'Austria';
+
+export const countries: Countries[] = ['Ukraine', 'Romania', 'Serbia', 'Croatia', 'Austria'];
+
+const CROSSING_INFO_QUERY_PARAMS: Readonly<{ [K in Countries]: string }> = Object.freeze({
   Ukraine: '?field_hat_rszakasz_value=ukr%C3%A1n+hat%C3%A1rszakasz',
   Romania: '?field_hat_rszakasz_value=rom%C3%A1n+hat%C3%A1rszakasz',
   Serbia: '?field_hat_rszakasz_value=szerb+hat%C3%A1rszakasz',
@@ -12,21 +15,19 @@ const CROSSING_INFO_QUERY_PARAMS = Object.freeze({
   Austria: '?field_hat_rszakasz_value=osztr%C3%A1k+hat%C3%A1rszakasz'
 });
 
-export type NeighboringCountry = keyof typeof CROSSING_INFO_QUERY_PARAMS;
-
 export interface QueueTime {
   car: string;
   bus: string;
   truck: string;
 }
 
-const NO_QUEUE = Object.freeze({
+export const EMPTY_QUEUE_TIME: Readonly<QueueTime> = Object.freeze({
   car: '',
   bus: '',
   truck: ''
 });
 
-export interface CrossingEntry {
+export interface CrossingInfo {
   from: string;
   to: string;
   openFrom: string;
@@ -35,7 +36,7 @@ export interface CrossingEntry {
   outbound: QueueTime;
 }
 
-function infoUrlForCountry(country: NeighboringCountry): string {
+export function infoUrlForCountry(country: Countries): string {
   return `${POLICE_HU_INFO_BASE_URL}${CROSSING_INFO_QUERY_PARAMS[country]}`;
 }
 
@@ -70,7 +71,7 @@ function extractLocationNames(crossingText: string): [string, string] {
   return [crossingParts[CROSSING_FROM_INDEX].trim(), crossingParts[CROSSING_TO_INDEX].trim()];
 }
 
-export function parseCrossingNames(htmlContent: string) {
+export function extractCrossingNames(htmlContent: string) {
   const $ = cheerio.load(htmlContent);
 
   // Due to how Cheerio works and makes use of `this` scoping, a named function is used instead of arrow function
@@ -81,7 +82,7 @@ export function parseCrossingNames(htmlContent: string) {
   return crossingTexts.map(extractLocationNames);
 }
 
-function parseWorkingHours(text: string): [string, string] {
+function extractWorkingHours(text: string): [string, string] {
   const [open, close, ...rest] = text.split('-');
   if (!isEmpty(rest)) {
     throw new Error(`Error occured during the parsing of working hours: ${text}`);
@@ -92,17 +93,17 @@ function parseWorkingHours(text: string): [string, string] {
   ];
 }
 
-export function parseOpenHours(htmlContent: string): Array<[string, string]> {
+export function extractOpenHours(htmlContent: string): Array<[string, string]> {
   const $ = cheerio.load(htmlContent);
 
   const hoursText = $('#borderinfo-accordions a > span:nth-of-type(2)').map(function(this: Cheerio) {
     return $(this).text();
   }).get();
 
-  return hoursText.map(parseWorkingHours);
+  return hoursText.map(extractWorkingHours);
 }
 
-export function parseQueueTimes(htmlContent: string): Array<{ inbound: QueueTime, outbound: QueueTime }> {
+export function extractQueueTimes(htmlContent: string): Array<{ inbound: QueueTime, outbound: QueueTime }> {
   const $ = cheerio.load(htmlContent);
 
   // Forced casting is needed here, since Cheerio's type definition for 'get' doesn't take into account mapping,
@@ -116,14 +117,14 @@ export function parseQueueTimes(htmlContent: string): Array<{ inbound: QueueTime
     const $inTraffic = $queue.find('div.col-md-3:nth-of-type(2) > div:not(.label)');
 
     const [outbound, ...restOut] = $outTraffic.map(function(this: Cheerio) {
-      return parseTrafficEntries($(this));
+      return extractTrafficEntries($(this));
     }).get() as any as QueueTime[];
     if (!isEmpty(restOut)) {
       throw new Error(`Error occured during the parsing of outbound traffic\n: ${htmlContent}`);
     }
 
     const [inbound, ...restIn] = $inTraffic.map(function(this: Cheerio) {
-      return parseTrafficEntries($(this));
+      return extractTrafficEntries($(this));
     }).get() as any as QueueTime[];
     if (!isEmpty(restIn)) {
       throw new Error(`Error occured during the parsing of inbound traffic\n: ${htmlContent}`);
@@ -139,7 +140,7 @@ export function parseQueueTimes(htmlContent: string): Array<{ inbound: QueueTime
     .map(extractQueueText).get() as any as Array<{ inbound: QueueTime, outbound: QueueTime }>;
 }
 
-function parseTrafficEntries($traffic: Cheerio): QueueTime {
+function extractTrafficEntries($traffic: Cheerio): QueueTime {
   // Traffic entry DOM tree contains child div entries for specific traffic queue time entires
   // No div entries, means no queue time for anything.
   const car = $traffic.children('div.szgk').text();
@@ -153,10 +154,10 @@ function parseTrafficEntries($traffic: Cheerio): QueueTime {
   };
 }
 
-function parseContent(content: string): CrossingEntry[] {
-  const crossingNames = parseCrossingNames(content);
-  const crossingOpenHours = parseOpenHours(content);
-  const crossingQueueTimes = parseQueueTimes(content);
+export function extractCrossingInformation(content: string): CrossingInfo[] {
+  const crossingNames = extractCrossingNames(content);
+  const crossingOpenHours = extractOpenHours(content);
+  const crossingQueueTimes = extractQueueTimes(content);
 
   const sameNumberOfEntries =
     crossingNames.length === crossingOpenHours.length &&
@@ -174,7 +175,7 @@ function parseContent(content: string): CrossingEntry[] {
     ([
       [from, to] = ['', ''],
       [openFrom, openUntil] = ['', ''],
-      { inbound, outbound } = { inbound: NO_QUEUE, outbound: NO_QUEUE }
+      { inbound, outbound } = { inbound: EMPTY_QUEUE_TIME, outbound: EMPTY_QUEUE_TIME }
     ]) => ({
       from,
       to,
@@ -186,10 +187,4 @@ function parseContent(content: string): CrossingEntry[] {
   );
 
   return entries;
-}
-
-export async function fetchTrafficInfoForCountry(country: NeighboringCountry): Promise<CrossingEntry[]> {
-  const url = infoUrlForCountry(country);
-  const infoQuery = axios.get(url);
-  return infoQuery.then((response) => parseContent(response.data));
 }
