@@ -3,11 +3,11 @@ import { isEmpty, zip } from 'lodash';
 
 const POLICE_HU_INFO_BASE_URL = 'http://www.police.hu/hu/hirek-es-informaciok/hatarinfo';
 
-export type Countries = 'Ukraine' | 'Romania' | 'Serbia' | 'Croatia' | 'Austria';
+export type Country = 'Ukraine' | 'Romania' | 'Serbia' | 'Croatia' | 'Austria';
 
-export const countries: Countries[] = ['Ukraine', 'Romania', 'Serbia', 'Croatia', 'Austria'];
+export const COUNTRIES: ReadonlyArray<Country> = ['Ukraine', 'Romania', 'Serbia', 'Croatia', 'Austria'];
 
-const CROSSING_INFO_QUERY_PARAMS: Readonly<{ [K in Countries]: string }> = Object.freeze({
+const CROSSING_INFO_QUERY_PARAMS: Readonly<{ [K in Country]: string }> = Object.freeze({
   Ukraine: '?field_hat_rszakasz_value=ukr%C3%A1n+hat%C3%A1rszakasz',
   Romania: '?field_hat_rszakasz_value=rom%C3%A1n+hat%C3%A1rszakasz',
   Serbia: '?field_hat_rszakasz_value=szerb+hat%C3%A1rszakasz',
@@ -36,7 +36,7 @@ export interface CrossingInfo {
   outbound: QueueTime;
 }
 
-export function infoUrlForCountry(country: Countries): string {
+export function infoUrlForCountry(country: Country): string {
   return `${POLICE_HU_INFO_BASE_URL}${CROSSING_INFO_QUERY_PARAMS[country]}`;
 }
 
