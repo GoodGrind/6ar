@@ -16,15 +16,15 @@ const CROSSING_INFO_QUERY_PARAMS: Readonly<{ [K in Country]: string }> = Object.
 });
 
 export interface QueueTime {
-  car: string;
-  bus: string;
-  truck: string;
+  car: number;
+  bus: number;
+  truck: number;
 }
 
 export const EMPTY_QUEUE_TIME: Readonly<QueueTime> = Object.freeze({
-  car: '',
-  bus: '',
-  truck: ''
+  car: 0,
+  bus: 0,
+  truck: 0
 });
 
 export interface CrossingInfo {
@@ -178,9 +178,9 @@ function extractTrafficEntries($traffic: Cheerio): QueueTime {
   const truck = $traffic.children('div.tgk').text();
 
   return {
-    car,
-    bus,
-    truck,
+    car: queueTimeToMinutes(car),
+    bus: queueTimeToMinutes(bus),
+    truck: queueTimeToMinutes(truck)
   };
 }
 
