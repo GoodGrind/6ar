@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { promisify } from 'util';
-import { extractCrossingNames, extractOpenHours, extractQueueTimes } from '../../traffic-info/police-hu';
+import { extractCrossingNames, extractOpenHours, extractQueueTimes, queueTimeToMinutes } from '../../traffic-info/police-hu';
 
 const readFile = promisify(fs.readFile);
 
@@ -126,4 +126,32 @@ test('parsing of queue times', async () => {
   expect(queueTimes[4]).toEqual(
     { inbound: { car: '1 óra', bus: '', truck: '' }, outbound: { car: '1 óra', bus: '', truck: '2 óra' } }
   );
+});
+
+test('test conversion of police.hu queue times: whole hours to minutes', async () => {
+  expect(queueTimeToMinutes('1 óra')).toEqual(60);
+  expect(queueTimeToMinutes('2 óra')).toEqual(120);
+  expect(queueTimeToMinutes('4 óra')).toEqual(240);
+});
+
+test('test conversion of police.hu queue times: fraction of an hour to minutes', async () => {
+  expect(queueTimeToMinutes('1/2 óra')).toEqual(30);
+  expect(queueTimeToMinutes('1/4 óra')).toEqual(15);
+  expect(queueTimeToMinutes('3/4 óra')).toEqual(45);
+});
+
+test('test conversion of police.hu queue times: inputs containing extra white space', async () => {
+  expect(queueTimeToMinutes('1/2  óra')).toEqual(30);
+  expect(queueTimeToMinutes('1/ 4 óra')).toEqual(15);
+  expect(queueTimeToMinutes('3 / 4  óra')).toEqual(45);
+  expect(queueTimeToMinutes(' 4  óra ')).toEqual(240);
+});
+
+test('test conversion of police.hu queue times: empty inputs', async () => {
+  expect(queueTimeToMinutes('')).toEqual(0);
+});
+
+test('test conversion of police.hu queue times: unsupported input formats should return NaN', async () => {
+  expect(queueTimeToMinutes('not a number')).toEqual(NaN);
+  expect(queueTimeToMinutes('1')).toEqual(NaN);
 });

@@ -140,6 +140,36 @@ export function extractQueueTimes(htmlContent: string): Array<{ inbound: QueueTi
     .map(extractQueueText).get() as any as Array<{ inbound: QueueTime, outbound: QueueTime }>;
 }
 
+/*
+  Converts the police.hu queue time string representation to a number.
+  For example, calling this function with '1/2 óra' would result in 30 (minutes).
+ */
+export function queueTimeToMinutes(queueTime: string): number {
+  if (isEmpty(queueTime)) {
+    return 0;
+  }
+
+  const HOUR_POSTFIX = 'óra';
+  // we want to remove any unnecessary whitespaces and the hour postfix notation.
+  // this leaves the rational or whole number representation, meaning 1/2 or 1...
+  const hoursInQueue = queueTime.trim().slice(0, -HOUR_POSTFIX.length).trim();
+  const isRationalNumber = hoursInQueue.includes('/');
+
+  const RADIX = 10;
+  let hours;
+  if (isRationalNumber) {
+    const [nomninatorPart, denominatorPart] = hoursInQueue.split('/');
+    const nominator = parseInt(nomninatorPart, RADIX);
+    const denominator = parseInt(denominatorPart, RADIX);
+    hours = nominator / denominator;
+  } else {
+    hours = parseInt(hoursInQueue, RADIX);
+  }
+
+  const MINUTES_IN_HOUR = 60;
+  return hours * MINUTES_IN_HOUR;
+}
+
 function extractTrafficEntries($traffic: Cheerio): QueueTime {
   // Traffic entry DOM tree contains child div entries for specific traffic queue time entires
   // No div entries, means no queue time for anything.
