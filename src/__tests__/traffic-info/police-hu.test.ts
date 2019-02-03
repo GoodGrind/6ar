@@ -1,7 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { promisify } from 'util';
-import { extractCrossingNames, extractOpenHours, extractQueueTimes } from '../../traffic-info/police-hu';
+import {
+  extractCrossingNames, extractOpenHours,
+  extractQueueTimes, queueTimeToMinutes
+} from '../../traffic-info/police-hu';
 
 const readFile = promisify(fs.readFile);
 
@@ -12,7 +15,6 @@ test('test Ukraine crossing name parsing', async () => {
   const htmlPath = path.join(__dirname, 'police-hu-info-ukraine.html');
   const policeHuHtml = await readFile(htmlPath, { encoding: 'utf-8' });
   const names = extractCrossingNames(policeHuHtml);
-  const NUMBER_OF_CROSSINGS_TO_UKRAINE = 5;
   expect(names.length).toBe(NUMBER_OF_CROSSINGS_TO_UKRAINE);
   expect(names[0]).toEqual(['Barabás', 'Koson’']);
   expect(names[1]).toEqual(['Beregsurány', 'Астей']);
@@ -112,18 +114,46 @@ test('parsing of queue times', async () => {
   const queueTimes = extractQueueTimes(policeHuHtml);
   expect(queueTimes.length).toBe(NUMBER_OF_CROSSINGS_TO_UKRAINE);
   expect(queueTimes[0]).toEqual(
-    { inbound: { car: '', bus: '', truck: '' }, outbound: { car: '', bus: '', truck: '' } }
+    { inbound: { car: 0, bus: 0, truck: 0 }, outbound: { car: 0, bus: 0, truck: 0 } }
   );
   expect(queueTimes[1]).toEqual(
-    { inbound: { car: '1 óra', bus: '', truck: '' }, outbound: { car: '1/2 óra', bus: '', truck: '' } }
+    { inbound: { car: 60, bus: 0, truck: 0 }, outbound: { car: 30, bus: 0, truck: 0 } }
   );
   expect(queueTimes[2]).toEqual(
-    { inbound: { car: '', bus: '', truck: '' }, outbound: { car: '', bus: '', truck: '' } }
+    { inbound: { car: 0, bus: 0, truck: 0 }, outbound: { car: 0, bus: 0, truck: 0 } }
   );
   expect(queueTimes[3]).toEqual(
-    { inbound: { car: '', bus: '', truck: '' }, outbound: { car: '', bus: '', truck: '' } }
+    { inbound: { car: 0, bus: 0, truck: 0 }, outbound: { car: 0, bus: 0, truck: 0 } }
   );
   expect(queueTimes[4]).toEqual(
-    { inbound: { car: '1 óra', bus: '', truck: '' }, outbound: { car: '1 óra', bus: '', truck: '2 óra' } }
+    { inbound: { car: 60, bus: 0, truck: 0 }, outbound: { car: 60, bus: 0, truck: 120 } }
   );
+});
+
+test('test conversion of police.hu queue times: whole hours to minutes', async () => {
+  expect(queueTimeToMinutes('1 óra')).toEqual(60);
+  expect(queueTimeToMinutes('2 óra')).toEqual(120);
+  expect(queueTimeToMinutes('4 óra')).toEqual(240);
+});
+
+test('test conversion of police.hu queue times: fraction of an hour to minutes', async () => {
+  expect(queueTimeToMinutes('1/2 óra')).toEqual(30);
+  expect(queueTimeToMinutes('1/4 óra')).toEqual(15);
+  expect(queueTimeToMinutes('3/4 óra')).toEqual(45);
+});
+
+test('test conversion of police.hu queue times: inputs containing extra white space', async () => {
+  expect(queueTimeToMinutes('1/2  óra')).toEqual(30);
+  expect(queueTimeToMinutes('1/ 4 óra')).toEqual(15);
+  expect(queueTimeToMinutes('3 / 4  óra')).toEqual(45);
+  expect(queueTimeToMinutes(' 4  óra ')).toEqual(240);
+});
+
+test('test conversion of police.hu queue times: empty inputs', async () => {
+  expect(queueTimeToMinutes('')).toEqual(0);
+});
+
+test('test conversion of police.hu queue times: unsupported input formats should return NaN', async () => {
+  expect(queueTimeToMinutes('not a number')).toEqual(NaN);
+  expect(queueTimeToMinutes('1')).toEqual(NaN);
 });
