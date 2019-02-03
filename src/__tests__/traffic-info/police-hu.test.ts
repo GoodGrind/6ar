@@ -1,7 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { promisify } from 'util';
-import { extractCrossingNames, extractOpenHours, extractQueueTimes, queueTimeToMinutes } from '../../traffic-info/police-hu';
+import {
+  extractCrossingNames, extractOpenHours,
+  extractQueueTimes, queueTimeToMinutes
+} from '../../traffic-info/police-hu';
 
 const readFile = promisify(fs.readFile);
 
@@ -12,7 +15,6 @@ test('test Ukraine crossing name parsing', async () => {
   const htmlPath = path.join(__dirname, 'police-hu-info-ukraine.html');
   const policeHuHtml = await readFile(htmlPath, { encoding: 'utf-8' });
   const names = extractCrossingNames(policeHuHtml);
-  const NUMBER_OF_CROSSINGS_TO_UKRAINE = 5;
   expect(names.length).toBe(NUMBER_OF_CROSSINGS_TO_UKRAINE);
   expect(names[0]).toEqual(['Barabás', 'Koson’']);
   expect(names[1]).toEqual(['Beregsurány', 'Астей']);
