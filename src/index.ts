@@ -1,5 +1,3 @@
-export function inc(n: number) {
-  return n + 1;
-}
+import { main } from './cli';
 
-console.log('Hello, World!');
+main();

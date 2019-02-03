@@ -62,3 +62,6 @@ typings/
 
 # TernJS
 .tern-port
+
+# CLI runner default output folder
+police_hu_data/
