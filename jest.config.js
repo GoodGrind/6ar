@@ -1,7 +1,7 @@
 // For details, check: https://basarat.gitbooks.io/typescript/docs/testing/jest.html
 module.exports = {
   "roots": [
-    "<rootDir>/src"
+    "<rootDir>/modules"
   ],
   "transform": {
     "^.+\\.tsx?$": "ts-jest"

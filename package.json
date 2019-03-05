@@ -4,27 +4,15 @@
   "description": "Border traffic monitoring system",
   "main": "index.js",
   "scripts": {
-    "start": "npm run watch",
-    "watch": "npx nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
-    "test": "jest"
+    "build": "npx lerna run build",
+    "watch": "npx lerna run --parallel watch",
+    "test": "npx lerna run test",
+    "lint": "npx lerna run lint"
   },
-  "author": "Norbert Sram",
+  "author": "GoodGrind",
   "license": "GPL-3.0-or-later",
   "devDependencies": {
-    "@types/cheerio": "0.22.9",
-    "@types/jest": "23.3.9",
-    "@types/lodash": "4.14.118",
-    "@types/node": "10.12.10",
-    "jest": "23.6.0",
-    "nodemon": "1.18.6",
-    "ts-jest": "23.10.5",
-    "ts-node": "7.0.1",
-    "tslint": "5.11.0",
-    "typescript": "3.1.6"
+    "lerna": "3.13.1"
   },
-  "dependencies": {
-    "axios": "0.18.0",
-    "cheerio": "1.0.0-rc.2",
-    "lodash": "4.17.11"
-  }
+  "dependencies": {}
 }

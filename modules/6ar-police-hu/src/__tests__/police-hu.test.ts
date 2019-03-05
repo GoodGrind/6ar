@@ -4,7 +4,7 @@ import { promisify } from 'util';
 import {
   extractCrossingNames, extractOpenHours,
   extractQueueTimes, queueTimeToMinutes
-} from '../../traffic-info/police-hu';
+} from '..';
 
 const readFile = promisify(fs.readFile);
 
