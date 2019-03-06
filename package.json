@@ -4,9 +4,10 @@
   "description": "Border traffic monitoring system",
   "main": "index.js",
   "scripts": {
+    "bootstrap": "npx lerna bootstrap --hoist",
     "build": "npx lerna run build",
     "watch": "npx lerna run --parallel watch",
-    "test": "npx lerna run test",
+    "test": "npx jest",
     "lint": "npx lerna run lint"
   },
   "author": "GoodGrind",
