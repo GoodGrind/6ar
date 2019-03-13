@@ -1,6 +1,6 @@
+import { Crossings, startFetchTask } from '6ar-police-hu';
 import fs from 'fs';
 import { promisify } from 'util';
-import { Crossings, startFetchTask } from './traffic-info/police-hu-crawler';
 
 async function saveCrossingInformation(crossings: Crossings, toFile: string): Promise<void> {
   const JSON_INDENTATION = 2;
