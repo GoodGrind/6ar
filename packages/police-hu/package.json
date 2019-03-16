@@ -1,5 +1,5 @@
 {
-  "name": "6ar-police-hu",
+  "name": "@6ar/police-hu",
   "version": "0.0.0",
   "description": "Handles the parsing and fetching of border traffic information from the official Hungarian site",
   "keywords": [

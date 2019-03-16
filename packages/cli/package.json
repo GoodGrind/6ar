@@ -1,5 +1,5 @@
 {
-  "name": "6ar-cli",
+  "name": "@6ar/cli",
   "version": "0.0.0",
   "description": "CLI interface for 6ar",
   "keywords": [
@@ -8,7 +8,7 @@
   "author": "GoodGrind",
   "homepage": "http://6ar.hu",
   "license": "GPL-3.0",
-  "main": "lib/6ar-cli.js",
+  "main": "lib/cli.js",
   "directories": {
     "lib": "lib",
     "test": "__tests__"
@@ -30,7 +30,7 @@
     "url": "https://github.com/snorbi07/6ar/issues"
   },
   "dependencies": {
-    "6ar-police-hu": "^0.0.0"
+    "@6ar/police-hu": "^0.0.0"
   },
   "devDependencies": {
     "@types/jest": "24.0.9",

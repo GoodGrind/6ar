@@ -25,7 +25,7 @@ In order to ensure separation of concerns, the application is structured as a co
 Each module is defined to be isolated from the others, meaning it could be in a completely separate repository. The mono-repository based structure ensures that you are always using a correct version of the module dependencies
 and that the entire application can use the exact same version of 3rd party dependencies. Plus it makes it easier to ensure that the same tooling and testing configuration is used in all modules... and so forth. Yes, there are trade-offs, but the goal of this README is not to go into those! You get the picture.
 
-All application modules reside under the top-level `/modules` folder. The modules folder has a flat structure, meaning nesting is not supported and discouraged.
+All application modules reside under the top-level `/packages` folder. The modules folder has a flat structure, meaning nesting is not supported and discouraged.
 Various tooling configuration files (`jest.config.js`, `tsconfig.json`, ...) also reside under the top-level folder and are extended by the module specific configuration files.
 
 ## Adding new modules

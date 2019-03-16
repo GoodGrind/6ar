@@ -67,5 +67,5 @@ typings/
 police_hu_data/
 
 # Lerna module libs
-modules/*/lib
+packages/*/lib
 

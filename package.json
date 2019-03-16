@@ -1,5 +1,5 @@
 {
-  "name": "6ar",
+  "name": "@6ar/6ar",
   "version": "1.0.0",
   "description": "Border traffic monitoring system",
   "main": "index.js",

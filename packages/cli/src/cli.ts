@@ -1,4 +1,4 @@
-import { Crossings, startFetchTask } from '6ar-police-hu';
+import { Crossings, startFetchTask } from '@6ar/police-hu';
 import fs from 'fs';
 import { promisify } from 'util';
 
