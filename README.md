@@ -16,6 +16,9 @@ To verify that all is well, just run the test NPM script: `npm test`. This execu
 
 In case you are developing multiple modules at once and want to make sure that incremental compilation happens for your changes, make sure to run: `npm run watch`, which starts a the TypeScript compiler watch mode for all modules in parallel.
 
+## EditorConfig setup
+The project uses [EditorConfig](https://editorconfig.org/) to make sure that a consistent formatting is used. Make sure to configure your preferred editor to use the provided `.editorconfig` configuration. You can also verify correct indentation support by running `npm run lint:editorconfig`. This will check all files in the repository.
+
 # Project structure
 
 In order to ensure separation of concerns, the application is structured as a composition of set of modules (modules are the application specific NPM modules), each focusing on a specific layer.

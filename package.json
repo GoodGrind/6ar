@@ -8,7 +8,8 @@
     "build": "npx lerna run build",
     "watch": "npx lerna run --parallel watch",
     "test": "npx jest",
-    "lint": "npx lerna run lint"
+    "lint": "npx lerna run lint",
+    "lint:editorconfig": "npx editorconfig-checker"
   },
   "author": "GoodGrind",
   "license": "GPL-3.0-or-later",
