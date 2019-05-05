@@ -9,7 +9,7 @@ async function saveCrossingInformation(crossings: Crossings, toFile: string): Pr
   return writeFile(toFile, prettyPrinted, 'utf8');
 }
 
-async function saveCurrentPoliceHuCrossingInfo(crossingInfo: Crossings, folder: string) {
+async function saveCurrentPoliceHuCrossingInfo(crossingInfo: Crossings, folder: string): Promise<boolean> {
   const currentTime = new Date().toISOString();
   const fileName = `${folder}/police_hu_${currentTime}.json`;
   await saveCrossingInformation(crossingInfo, fileName);
@@ -19,7 +19,8 @@ async function saveCurrentPoliceHuCrossingInfo(crossingInfo: Crossings, folder: 
 export function main(): void {
   // TODO(snorbi07): read from command line parameters. Right now this is not important as this is not the main usage
   const outputFolder = 'police_hu_date';
-  const fetchTaskCallback = (crossingInfo: Crossings) => saveCurrentPoliceHuCrossingInfo(crossingInfo, outputFolder);
+  const fetchTaskCallback = (crossingInfo: Crossings): Promise<boolean> =>
+    saveCurrentPoliceHuCrossingInfo(crossingInfo, outputFolder);
   startFetchTask(fetchTaskCallback);
   return;
 }
