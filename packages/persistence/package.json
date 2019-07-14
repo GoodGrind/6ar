@@ -26,13 +26,13 @@
     "url": "https://github.com/snorbi07/6ar/issues"
   },
   "dependencies": {
-    "knex": "0.16.3",
-    "pg": "7.9.0"
+    "knex": "0.19.0",
+    "pg": "7.11.0"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "1.7.0",
-    "@typescript-eslint/parser": "1.7.0",
-    "eslint": "5.16.0",
-    "ts-node": "8.1.0"
+    "@typescript-eslint/eslint-plugin": "1.12.0",
+    "@typescript-eslint/parser": "1.12.0",
+    "eslint": "6.0.1",
+    "ts-node": "8.3.0"
   }
 }
