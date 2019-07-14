@@ -1,6 +1,6 @@
 // TODO(snorbi07): read the configurations from an env file(dotenv)
 const dbClientType = 'postgresql';
-const dbConnectionUrl = 'postgres://postgres:password@localhost:5432/6ar';
+const dbConnectionUrl = 'postgres://6ar:6arpassword@localhost:5432/6ar';
 const dbPoolMin = 2;
 const dbPoolMax = 10;
 
@@ -45,8 +45,7 @@ module.exports = {
       min: dbPoolMin,
       max: dbPoolMax
     },
-    migrations: migrations,
-    seeds: seeds
+    migrations: migrations
   }
 
 };
