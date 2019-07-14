@@ -25,6 +25,11 @@ module.exports = {
     }
   }],
   'rules': {
+    '@typescript-eslint/explicit-function-return-type': {
+      allowExpressions: true,
+      allowTypedFunctionExpressions: false,
+      allowHigherOrderFunctions: false,
+    },
     '@typescript-eslint/indent': ['error', 2],
     'indent': [
       'error',
