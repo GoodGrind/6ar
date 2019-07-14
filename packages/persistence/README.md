@@ -13,6 +13,7 @@ It seems that currently, TypeScript migrations are only recognized if the `knexf
 
 ## Setting up a development environment
 
-sudo docker run --name 6ar-postgres -e POSTGRES_PASSWORD=password -p 127.0.0.1:5432:5432 -d postgres
+`sudo docker run --name 6ar-postgres -e POSTGRES_USER=6ar -e POSTGRES_PASSWORD=6arpassword -e TZ=Europe/Budapest -p 127.0.0.1:5432:5432 -d postgres`
 
-For connecting to the running docker image database: `sudo docker exec -it 6ar-postgres psql -U postgres`.
+## For connecting to the running docker image database:
+`sudo docker exec -it 6ar-postgres psql -U 6ar`.
