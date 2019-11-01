@@ -20,19 +20,22 @@
   "scripts": {
     "lint:typescript": "npx eslint migrations/*.ts",
     "lint": "npm run lint:typescript",
+    "db:migrate": "knex --knexfile knexfile.ts migrate:latest",
+    "db:drop": "knex --knexfile knexfile.ts migrate:latest",
+    "db:seed": "knex --knexfile knexfile.ts seed:run",
     "test": "echo \"todo\""
   },
   "bugs": {
     "url": "https://github.com/snorbi07/6ar/issues"
   },
   "dependencies": {
-    "knex": "0.19.0",
-    "pg": "7.11.0"
+    "knex": "0.20.1",
+    "pg": "7.12.1"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "1.12.0",
-    "@typescript-eslint/parser": "1.12.0",
-    "eslint": "6.0.1",
-    "ts-node": "8.3.0"
+    "@typescript-eslint/eslint-plugin": "2.6.0",
+    "@typescript-eslint/parser": "2.6.0",
+    "eslint": "6.6.0",
+    "ts-node": "8.4.1"
   }
 }
