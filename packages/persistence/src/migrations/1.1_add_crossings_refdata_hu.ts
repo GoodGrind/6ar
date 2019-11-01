@@ -1,5 +1,5 @@
 import * as Knex from 'knex';
-import {CROSSINGS_TABLE_NAME} from './1.0_create_crossings_table';
+import {CROSSING_TABLE_NAME} from './1.0_create_crossings_table';
 
 const HU_BORDER_CROSSING_ENTRIES = [
   // Ukrain crossings
@@ -58,10 +58,10 @@ const HU_BORDER_CROSSING_ENTRIES = [
 ];
 
 export async function up(knex: Knex): Promise<void> {
-  return knex(CROSSINGS_TABLE_NAME).insert(HU_BORDER_CROSSING_ENTRIES);
+  return knex(CROSSING_TABLE_NAME).insert(HU_BORDER_CROSSING_ENTRIES);
 }
 
 export async function down(knex: Knex): Promise<void> {
   const refDataIds: number[] = HU_BORDER_CROSSING_ENTRIES.map(crossing => crossing.id);
-  return knex(CROSSINGS_TABLE_NAME).whereIn('id', refDataIds).del();
+  return knex(CROSSING_TABLE_NAME).whereIn('id', refDataIds).del();
 }

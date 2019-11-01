@@ -1,9 +1,9 @@
 import * as Knex from 'knex';
 
-export const CROSSINGS_TABLE_NAME = 'crossings';
+export const CROSSING_TABLE_NAME = 'crossing';
 
 export async function up(knex: Knex): Promise<void> {
-  return knex.schema.createTable(CROSSINGS_TABLE_NAME, (table) => {
+  return knex.schema.createTable(CROSSING_TABLE_NAME, (table) => {
     table.increments('id').unsigned().primary();
     table.string('name').notNullable();
     table.string('foreign_country_code').notNullable();
@@ -14,5 +14,5 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 export async function down(knex: Knex): Promise<void> {
-  return knex.schema.dropTableIfExists(CROSSINGS_TABLE_NAME);
+  return knex.schema.dropTableIfExists(CROSSING_TABLE_NAME);
 }

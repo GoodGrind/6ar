@@ -1,13 +1,13 @@
 import * as Knex from 'knex';
-import {CROSSINGS_TABLE_NAME} from './1.0_create_crossings_table';
+import {CROSSING_TABLE_NAME} from './1.0_create_crossings_table';
 
-export const BORDER_TRAFFIC_ENTRIES_TABLE_NAME = 'border_traffic_entries';
+export const BORDER_TRAFFIC_ENTRY_TABLE_NAME = 'border_traffic_entry';
 
 export async function up(knex: Knex): Promise<void> {
-  return knex.schema.createTable(BORDER_TRAFFIC_ENTRIES_TABLE_NAME, (table) => {
+  return knex.schema.createTable(BORDER_TRAFFIC_ENTRY_TABLE_NAME, (table) => {
     table.increments('id').unsigned().primary();
 
-    table.integer('crossing_id').unsigned().notNullable().references('id').inTable(CROSSINGS_TABLE_NAME);
+    table.integer('crossing_id').unsigned().notNullable().references('id').inTable(CROSSING_TABLE_NAME);
 
     table.enu('traffic_type', ['unspecified', 'car', 'bus', 'truck', 'all'])
       .notNullable().comment('Specifies the queue times type, as those are dependent on the type of traffic/vehicle');
@@ -25,5 +25,5 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 export async function down(knex: Knex): Promise<void> {
-  return knex.schema.dropTableIfExists(BORDER_TRAFFIC_ENTRIES_TABLE_NAME);
+  return knex.schema.dropTableIfExists(BORDER_TRAFFIC_ENTRY_TABLE_NAME);
 }
