@@ -24,7 +24,7 @@
     "build": "npx tsc",
     "test": "npx jest",
     "watch": "npx tsc -w",
-    "lint:typescript": "npx eslint ./src/*.ts",
+    "lint:typescript": "eslint src/**/*.ts",
     "lint": "npm run lint:typescript"
   },
   "bugs": {

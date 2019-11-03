@@ -18,7 +18,7 @@
     "url": "git+https://github.com/snorbi07/6ar.git"
   },
   "scripts": {
-    "lint:typescript": "npx eslint migrations/*.ts",
+    "lint:typescript": "eslint src/**/*.ts",
     "lint": "npm run lint:typescript",
     "db:migrate": "knex --knexfile knexfile.ts migrate:latest",
     "db:drop": "knex --knexfile knexfile.ts migrate:latest",
