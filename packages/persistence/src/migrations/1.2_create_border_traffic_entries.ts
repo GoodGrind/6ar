@@ -13,7 +13,7 @@ export async function up(knex: Knex): Promise<void> {
       .notNullable().comment('Specifies the queue times type, as those are dependent on the type of traffic/vehicle');
 
     table.enu('traffic_direction', ['outbound', 'inbound'])
-      .notNullable().comment('Reference of point for traffic direction is Hungary. Outbound means leaving Hungary.')
+      .notNullable().comment('Reference of point for traffic direction is Hungary. Outbound means leaving Hungary.');
 
     table.integer('queue_time').unsigned().notNullable().comment('Queue time in minutes');
 
