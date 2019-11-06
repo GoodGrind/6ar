@@ -1,7 +1,8 @@
 module.exports = {
   'env': {
     'node': true,
-    'es6': true
+    'jest/globals': true,
+    'es6': true,
   },
   parser:  '@typescript-eslint/parser',
   'extends': [
@@ -25,6 +26,7 @@ module.exports = {
     }
   }],
   'rules': {
+    '@typescript-eslint/explicit-function-return-type': 0,
     '@typescript-eslint/indent': ['error', 2],
     'indent': [
       'error',
@@ -38,9 +40,7 @@ module.exports = {
       'error',
       'single'
     ],
-    'semi': [
-      'error',
-      'always'
-    ]
+    "semi": "off",
+    "@typescript-eslint/semi": ["error"]
   }
 };
