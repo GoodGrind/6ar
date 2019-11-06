@@ -7,7 +7,8 @@ module.exports = {
   parser:  '@typescript-eslint/parser',
   'extends': [
     'eslint:recommended',
-    'plugin:@typescript-eslint/recommended'
+    'plugin:@typescript-eslint/recommended',
+    'plugin:jest/all'
   ],
   'globals': {
     'Atomics': 'readonly',
