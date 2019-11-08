@@ -84,6 +84,26 @@ export function extractCrossingNames(htmlContent: string) {
 
 function extractWorkingHours(text: string): [string, string] {
   const [open, close, ...rest] = text.split('-');
+  let openNumber= parseInt(open);
+  let closeNumber= parseInt(close);
+
+
+  if ( isNaN(openNumber) || isNaN(closeNumber) ) {
+    return[
+      ('00:00'),
+      ('00:00')
+    ];
+  }
+
+  return[
+    `0${open}:00`,
+    `${close}:00`
+  ];
+}
+
+/*
+function extractWorkingHours(text: string): [string, string] {
+  const [open, close, ...rest] = text.split('-');
   if (!isEmpty(rest)) {
     throw new Error(`Error occured during the parsing of working hours: ${text}`);
   }
@@ -92,7 +112,7 @@ function extractWorkingHours(text: string): [string, string] {
     close.trim().replace('.', ':')
   ];
 }
-
+*/
 export function extractOpenHours(htmlContent: string): Array<[string, string]> {
   const $ = cheerio.load(htmlContent);
 
