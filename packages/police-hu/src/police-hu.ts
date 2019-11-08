@@ -83,7 +83,7 @@ export function extractCrossingNames(htmlContent: string) {
 }
 
 function extractWorkingHours(text: string): [string, string] {
-  const [open, close, ...rest] = text.split('-');
+  const [open, close,...rest] = text.split('-');
   let openNumber= parseInt(open);
   let closeNumber= parseInt(close);
 
@@ -95,10 +95,20 @@ function extractWorkingHours(text: string): [string, string] {
     ];
   }
 
-  return[
-    `0${open}:00`,
-    `${close}:00`
+  if (rest === ["óra"]){
+    return[
+      `0${open}:00`,
+      `${close}:00`
+    ];
+  }
+  return [
+  open.trim().replace('.', ':'),
+  close.trim().replace('.', ':')
   ];
+
+  console.log(open);
+  console.log(close)
+
 }
 
 /*
