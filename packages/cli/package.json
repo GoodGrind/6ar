@@ -31,17 +31,18 @@
     "url": "https://github.com/snorbi07/6ar/issues"
   },
   "dependencies": {
-    "@6ar/police-hu": "^0.0.0"
+    "@6ar/police-hu": "file:../police-hu"
   },
   "devDependencies": {
-    "@types/jest": "24.0.9",
-    "@types/node": "11.10.4",
-    "@typescript-eslint/eslint-plugin": "1.7.0",
-    "@typescript-eslint/parser": "1.7.0",
-    "eslint": "5.16.0",
-    "jest": "24.1.0",
-    "ts-jest": "24.0.0",
-    "tslint": "5.13.1",
-    "typescript": "3.3.3333"
+    "@types/jest": "24.0.22",
+    "@types/node": "12.12.7",
+    "@typescript-eslint/eslint-plugin": "2.6.1",
+    "@typescript-eslint/parser": "2.6.1",
+    "eslint": "6.6.0",
+    "eslint-plugin-jest": "23.0.3",
+    "jest": "24.9.0",
+    "ts-jest": "24.1.0",
+    "tslint": "5.20.1",
+    "typescript": "3.7.2"
   }
 }
