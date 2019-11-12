@@ -17,3 +17,11 @@ It seems that currently, TypeScript migrations are only recognized if the `knexf
 
 ## For connecting to the running docker image database:
 `sudo docker exec -it 6ar-postgres psql -U 6ar`.
+
+
+## Conventions
+
+There is no one best practice that will cover every circumstance, however conventions are important. The database uses the following ones:
+- When it comes to table names use singular entity names with lower case ("crossing" instead of "crossings")
+- When it comes to field names use snake_case on your field names ("foreign_country_code"). Use short singular names unless the definition definitely makes sense as a plural.
+- When it comes to built in database functions or language names (SELECT). Unless there's a requirement for it to be capitalized a certain way, use ALL CAPS
