@@ -1,5 +1,5 @@
 import {DateTime} from 'luxon';
-import {fromValue, toValue} from '../repositories/luxon_mapper';
+import {fromValue, toValue} from '../repositories/luxon-mapper';
 
 describe('repository pattern value mapping for luxon types', () => {
   it('from database date to luxon', async () => {
