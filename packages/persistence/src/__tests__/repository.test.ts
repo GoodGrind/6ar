@@ -26,7 +26,7 @@ const mockRepository = (initialData: MockRecord[] = []): Repository<MockRecord> 
       return nextId;
     },
     async update(id: number, newValue: MockRecord): Promise<IdType> {
-      let editedRecord = storage[id];
+      const editedRecord = storage[id];
       editedRecord['some_property'] = newValue['some_property'];
       editedRecord['some_value'] = newValue['some_value'];
       return id;
@@ -142,16 +142,16 @@ describe('mapped repository value mapping', () => {
     });
 
     const newItem = await repo.find(0);
-    expect(newItem?.some_value).toStrictEqual('42');
+    expect(newItem && newItem['some_value']).toStrictEqual('42');
   });
 
   it('updating data triggers value mapping', async () => {
     expect.hasAssertions();
     const [repo, mappedRepo] = setupRepositories();
     repo.add({
-      id: 0,
-      some_property: 'hello',
-      some_value: 42
+      'id': 0,
+      'some_property': 'hello',
+      'some_value': 42
     });
 
     mappedRepo.update(0, {
@@ -161,20 +161,20 @@ describe('mapped repository value mapping', () => {
     });
 
     const newItem = await repo.find(0);
-    expect(newItem?.some_value).toStrictEqual('24');
-  })
+    expect(newItem && newItem['some_value']).toStrictEqual('24');
+  });
 
   it('reading data trigges value mapping', async () => {
     expect.hasAssertions();
     const [repo, mappedRepo] = setupRepositories();
     repo.add({
-      id: 0,
-      some_property: 'hello',
-      some_value: 42
+      'id': 0,
+      'some_property': 'hello',
+      'some_value': 42
     });
 
     const newItem = await mappedRepo.find(0);
-    expect(newItem?.someProperty).toStrictEqual(NaN);
-  })
+    expect(newItem && newItem.someProperty).toStrictEqual(NaN);
+  });
 
 });
