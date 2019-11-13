@@ -1,6 +1,7 @@
 import * as Knex from 'knex';
 import {DateTime} from 'luxon';
 import {createRepository, Entry, Repository} from './repository';
+import {DATE_TO_LUXON_MAPPERS} from './luxon-mapper';
 
 export interface BorderTrafficEntry extends Entry {
   id: number;
@@ -13,5 +14,5 @@ export interface BorderTrafficEntry extends Entry {
 }
 
 export function borderTrafficRepository(knex: Knex): Repository<BorderTrafficEntry> {
-  return createRepository<BorderTrafficEntry>(knex, 'border_taffic_entry', 'id');
+  return createRepository<BorderTrafficEntry>(knex, 'border_taffic_entry', 'id', DATE_TO_LUXON_MAPPERS);
 }

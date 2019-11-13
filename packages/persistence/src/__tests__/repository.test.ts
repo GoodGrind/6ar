@@ -1,4 +1,4 @@
-import {mappedRepository, Repository, Entry, IdType} from '../repositories/repository';
+import {mappedRepository, Repository, Entry, IdType, DEFAULT_MAPPERS, Mappers} from '../repositories/repository';
 
 interface MockEntry extends Entry {
   id: number;
@@ -105,4 +105,76 @@ describe('mapped repository naming convention mapping', () => {
       'some_value': 24
     });
   });
+});
+
+describe('mapped repository value mapping', () => {
+  const mappers: Mappers = {
+    ...DEFAULT_MAPPERS,
+    fromValue: (value: unknown): unknown => {
+      if (typeof value === 'number') {
+        return `${value}`;
+      }
+
+      return value;
+    },
+    toValue: (value: unknown): unknown => {
+      if (typeof value === 'string') {
+        return Number.parseInt(value);
+      }
+
+      return value;
+    }
+  };
+
+  const setupRepositories = (): [Repository<MockRecord>, Repository<MockEntry>] => {
+    const repo = mockRepository();
+    const mappedRepo = mappedRepository<MockRecord, MockEntry>(repo, mappers);
+    return [repo, mappedRepo];
+  };
+
+  it('new data additions have value mapping applied', async () => {
+    expect.hasAssertions();
+    const [repo, mappedRepo] = setupRepositories();
+    mappedRepo.add({
+      id: 0,
+      someProperty: 'hello',
+      someValue: 42
+    });
+
+    const newItem = await repo.find(0);
+    expect(newItem?.some_value).toStrictEqual('42');
+  });
+
+  it('updating data triggers value mapping', async () => {
+    expect.hasAssertions();
+    const [repo, mappedRepo] = setupRepositories();
+    repo.add({
+      id: 0,
+      some_property: 'hello',
+      some_value: 42
+    });
+
+    mappedRepo.update(0, {
+      id: 0,
+      someProperty: 'hello',
+      someValue: 24
+    });
+
+    const newItem = await repo.find(0);
+    expect(newItem?.some_value).toStrictEqual('24');
+  })
+
+  it('reading data trigges value mapping', async () => {
+    expect.hasAssertions();
+    const [repo, mappedRepo] = setupRepositories();
+    repo.add({
+      id: 0,
+      some_property: 'hello',
+      some_value: 42
+    });
+
+    const newItem = await mappedRepo.find(0);
+    expect(newItem?.someProperty).toStrictEqual(NaN);
+  })
+
 });

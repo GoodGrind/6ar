@@ -1,3 +1,4 @@
+import {DEFAULT_MAPPERS, Mappers} from './repository';
 import {DateTime} from 'luxon';
 
 export function fromValue(value: unknown): unknown {
@@ -15,3 +16,9 @@ export function toValue(value: unknown): unknown {
 
   return DateTime.fromJSDate(value);
 }
+
+export const DATE_TO_LUXON_MAPPERS: Mappers = {
+  ...DEFAULT_MAPPERS,
+  fromValue,
+  toValue
+};

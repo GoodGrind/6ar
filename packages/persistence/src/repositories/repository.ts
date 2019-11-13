@@ -12,14 +12,15 @@ export interface Repository<T extends Entry> {
   remove(id: IdType): Promise<void>;
 }
 
-interface Mappers {
+// TODO(snorbi07): consider passing the repository name (table name) and property name to all callbacks... all in all API needs to be revised as we go along.
+export interface Mappers {
   fromFieldName: (field: string) => string;
   toFieldName: (field: string) => string;
   fromValue: (field: unknown) => unknown;
   toValue: (field: unknown) => unknown;
 }
 
-const DEFAULT_MAPPERS: Mappers = {
+export const DEFAULT_MAPPERS: Mappers = {
   fromFieldName: snakeCase,
   toFieldName: camelCase,
   fromValue: identity,
@@ -27,10 +28,11 @@ const DEFAULT_MAPPERS: Mappers = {
 };
 
 // TODO(snorbi07): clean up type handling of this whole thing.
-function objectFieldMapper<T extends Entry, M extends Entry>(mapper: (name: string) => string, data: T): M {
+function objectFieldMapper<T extends Entry, M extends Entry>(nameMapper: (name: string) => string, valueMapper: (value: unknown) => unknown, data: T): M {
   const applyNamingConvetion = (acc: Record<string, unknown>, value: unknown, key: string): void => {
-    const keyName = mapper(key);
-    acc[keyName] = value;
+    const mappedName = nameMapper(key);
+    const mappedValue = valueMapper(value);
+    acc[mappedName] = mappedValue;
   };
 
   const mapped = transform(data as {}, applyNamingConvetion);
@@ -66,8 +68,8 @@ export function createRawRepository<T extends Entry>(knex: Knex, tableName: stri
 }
 
 export function mappedRepository<T extends Entry, M extends Entry>(repository: Repository<T>, mappers: Mappers = DEFAULT_MAPPERS): Repository<M> {
-  const toFieldNames = (entry: T): M => objectFieldMapper(mappers.toFieldName, entry);
-  const fromFieldNames = (entry: M): T => objectFieldMapper(mappers.fromFieldName, entry);
+  const applyToMappings = (entry: T): M => objectFieldMapper(mappers.toFieldName, mappers.toValue, entry);
+  const applyFromMappings = (entry: M): T => objectFieldMapper(mappers.fromFieldName, mappers.fromValue, entry);
 
   return {
     async find(id: IdType): Promise<M | null> {
@@ -75,14 +77,14 @@ export function mappedRepository<T extends Entry, M extends Entry>(repository: R
       if (!item) {
         return null;
       }
-      return toFieldNames(item);
+      return applyToMappings(item);
     },
     async add(entry: M): Promise<IdType> {
-      const mappedEntry: T = fromFieldNames(entry);
+      const mappedEntry: T = applyFromMappings(entry);
       return repository.add(mappedEntry);
     },
     async update(id: IdType, newValue: M): Promise<IdType> {
-      const mappedEntry: T = fromFieldNames(newValue);
+      const mappedEntry: T = applyFromMappings(newValue);
       return repository.update(id, mappedEntry);
     },
     async remove(id: IdType): Promise<void> {
