@@ -10,7 +10,7 @@ export interface BorderTrafficEntry extends Entry {
   trafficDirection: 'outbound' | 'inbound';
   queueTime: number;
   recordedAt: DateTime;
-  createdAt: DateTime;
+  createdAt?: DateTime;
 }
 
 export function borderTrafficRepository(knex: Knex): Repository<BorderTrafficEntry> {
