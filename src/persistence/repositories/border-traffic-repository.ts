@@ -14,5 +14,5 @@ export interface BorderTrafficEntry extends Entry {
 }
 
 export function borderTrafficRepository(knex: Knex): Repository<BorderTrafficEntry> {
-  return createRepository<BorderTrafficEntry>(knex, 'border_taffic_entry', 'id', DATE_TO_LUXON_MAPPERS);
+  return createRepository<BorderTrafficEntry>(knex, 'border_traffic_entry', 'id', DATE_TO_LUXON_MAPPERS);
 }
