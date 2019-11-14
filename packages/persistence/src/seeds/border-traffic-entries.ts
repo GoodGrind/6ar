@@ -1,5 +1,5 @@
 import * as Knex from 'knex';
-import {BORDER_TRAFFIC_ENTRY_TABLE_NAME} from '../migrations/1.2_create_border_traffic_entries';
+import {BORDER_TRAFFIC_ENTRY_TABLE_NAME} from '../migrations/1.02-create-border-traffic-entries';
 
 const MOCK_CROSSING_ENTRIES = [
   {id: 1, 'crossing_id': 1, 'traffic_type': 'car', 'traffic_direction':'outbound', 'queue_time': 30, 'recorded_at': new Date(2019, 9, 1, 13, 0, 0)},

@@ -1,5 +1,5 @@
 import * as Knex from 'knex';
-import {CROSSING_TABLE_NAME} from './1.0_create_crossings_table';
+import {CROSSING_TABLE_NAME} from './1.00-create-crossings-table';
 
 export const BORDER_TRAFFIC_ENTRY_TABLE_NAME = 'border_traffic_entry';
 
