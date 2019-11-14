@@ -2,7 +2,7 @@ import * as Knex from 'knex';
 import {identity, camelCase, snakeCase, transform} from 'lodash';
 
 export type IdType = number | string;
-export type Entry = Record<string, object | number | string>; // eslint-disable-line no-alert
+export type Entry = Record<string, object | number | string | undefined | null>; // eslint-disable-line no-alert
 
 export interface Repository<T extends Entry> {
   find(id: IdType): Promise<T | null>;
