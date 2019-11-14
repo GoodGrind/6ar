@@ -14,7 +14,8 @@
   "author": "GoodGrind",
   "license": "GPL-3.0-or-later",
   "devDependencies": {
-    "lerna": "3.13.4"
+    "lerna": "3.18.4",
+    "ts-jest": "24.1.0"
   },
   "dependencies": {}
 }

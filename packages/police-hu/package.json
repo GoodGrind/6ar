@@ -37,11 +37,11 @@
     "lodash": "4.17.15"
   },
   "devDependencies": {
-    "@types/cheerio": "0.22.13",
-    "@types/jest": "24.0.22",
-    "@types/lodash": "4.14.146",
-    "@typescript-eslint/eslint-plugin": "2.6.1",
-    "@typescript-eslint/parser": "2.6.1",
+    "@types/cheerio": "0.22.14",
+    "@types/jest": "24.0.23",
+    "@types/lodash": "4.14.147",
+    "@typescript-eslint/eslint-plugin": "2.7.0",
+    "@typescript-eslint/parser": "2.7.0",
     "eslint": "6.6.0",
     "eslint-plugin-jest": "23.0.3",
     "jest": "24.9.0",
