@@ -62,7 +62,7 @@ export function startFetchTask(crossingHandler: FetchTaskHandler, options?: Part
   const { interval, retries, errorHandler } = { ...DEFAULT_FETCH_TASK_OPTIONS, ...options };
 
   let retiresLeft = retries;
-  let fetchTaskId: number;
+  let fetchTaskId: number; //eslint-disable-line
 
   async function fetchTask(retriesLeft: number): Promise<void> {
     try {

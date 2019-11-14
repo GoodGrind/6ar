@@ -6,12 +6,12 @@ const dbPoolMax = 10;
 
 const migrations = {
   extension: 'ts',
-  directory: 'src/migrations',
+  directory: './src/persistence/migrations',
   tableName: '6ar_migrations'
 };
 
 const seeds = {
-  directory: './src/seeds'
+  directory: './src/persistence/seeds'
 };
 
 module.exports = {
