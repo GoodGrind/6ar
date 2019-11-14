@@ -71,11 +71,11 @@ function extractLocationNames(crossingText: string): [string, string] {
   return [crossingParts[CROSSING_FROM_INDEX].trim(), crossingParts[CROSSING_TO_INDEX].trim()];
 }
 
-export function extractCrossingNames(htmlContent: string) {
+export function extractCrossingNames(htmlContent: string): [string, string][] {
   const $ = cheerio.load(htmlContent);
 
   // Due to how Cheerio works and makes use of `this` scoping, a named function is used instead of arrow function
-  const crossingTexts = $('#borderinfo-accordions a > span:first-of-type').map(function(this: Cheerio) {
+  const crossingTexts = $('#borderinfo-accordions a > span:first-of-type').map(function(this: Cheerio): string {
     return $(this).text().trim();
   }).get();
 
@@ -93,57 +93,16 @@ function extractWorkingHours(text: string): [string, string] {
   ];
 }
 
-export function extractOpenHours(htmlContent: string): Array<[string, string]> {
+export function extractOpenHours(htmlContent: string): [string, string][] {
   const $ = cheerio.load(htmlContent);
 
-  const hoursText = $('#borderinfo-accordions a > span:nth-of-type(2)').map(function(this: Cheerio) {
+  const hoursText = $('#borderinfo-accordions a > span:nth-of-type(2)').map(function(this: Cheerio): string {
     return $(this).text();
   }).get();
 
   return hoursText.map(extractWorkingHours);
 }
 
-export function extractQueueTimes(htmlContent: string): Array<{ inbound: QueueTime, outbound: QueueTime }> {
-  const $ = cheerio.load(htmlContent);
-
-  // Forced casting is needed here, since Cheerio's type definition for 'get' doesn't take into account mapping,
-  // and always returns a string.
-  function extractQueueText(this: Cheerio): { inbound: QueueTime, outbound: QueueTime } {
-    const $queue = $(this);
-
-    // Find DOM entries that contain the inbound traffic information
-    const $outTraffic = $queue.find('div.col-md-3:first-of-type > div:not(.label)');
-
-    const $inTraffic = $queue.find('div.col-md-3:nth-of-type(2) > div:not(.label)');
-
-    const [outbound, ...restOut] = $outTraffic.map(function(this: Cheerio) {
-      return extractTrafficEntries($(this));
-    }).get() as any as QueueTime[];
-    if (!isEmpty(restOut)) {
-      throw new Error(`Error occured during the parsing of outbound traffic\n: ${htmlContent}`);
-    }
-
-    const [inbound, ...restIn] = $inTraffic.map(function(this: Cheerio) {
-      return extractTrafficEntries($(this));
-    }).get() as any as QueueTime[];
-    if (!isEmpty(restIn)) {
-      throw new Error(`Error occured during the parsing of inbound traffic\n: ${htmlContent}`);
-    }
-
-    return {
-      inbound,
-      outbound
-    };
-  }
-
-  return $('#borderinfo-accordions div.row')
-    .map(extractQueueText).get() as any as Array<{ inbound: QueueTime, outbound: QueueTime }>;
-}
-
-/*
-  Converts the police.hu queue time string representation to a number.
-  For example, calling this function with '1/2 óra' would result in 30 (minutes).
- */
 export function queueTimeToMinutes(queueTime: string): number {
   if (isEmpty(queueTime)) {
     return 0;
@@ -184,6 +143,48 @@ function extractTrafficEntries($traffic: Cheerio): QueueTime {
   };
 }
 
+export function extractQueueTimes(htmlContent: string): { inbound: QueueTime; outbound: QueueTime }[] {
+  const $ = cheerio.load(htmlContent);
+
+  // Forced casting is needed here, since Cheerio's type definition for 'get' doesn't take into account mapping,
+  // and always returns a string. Hence the eslint-disable instructions as well.
+  function extractQueueText(this: Cheerio): { inbound: QueueTime; outbound: QueueTime } {
+    const $queue = $(this);
+
+    // Find DOM entries that contain the inbound traffic information
+    const $outTraffic = $queue.find('div.col-md-3:first-of-type > div:not(.label)');
+
+    const $inTraffic = $queue.find('div.col-md-3:nth-of-type(2) > div:not(.label)');
+
+    const [outbound, ...restOut] = $outTraffic.map(function(this: Cheerio): QueueTime {
+      return extractTrafficEntries($(this));
+    }).get() as any as QueueTime[]; // eslint-disable-line @typescript-eslint/no-explicit-any
+    if (!isEmpty(restOut)) {
+      throw new Error(`Error occured during the parsing of outbound traffic\n: ${htmlContent}`);
+    }
+
+    const [inbound, ...restIn] = $inTraffic.map(function(this: Cheerio): QueueTime {
+      return extractTrafficEntries($(this));
+    }).get() as any as QueueTime[]; // eslint-disable-line @typescript-eslint/no-explicit-any
+    if (!isEmpty(restIn)) {
+      throw new Error(`Error occured during the parsing of inbound traffic\n: ${htmlContent}`);
+    }
+
+    return {
+      inbound,
+      outbound
+    };
+  }
+
+  return $('#borderinfo-accordions div.row')
+    .map(extractQueueText).get() as any as { inbound: QueueTime; outbound: QueueTime }[]; // eslint-disable-line @typescript-eslint/no-explicit-any
+}
+
+/*
+  Converts the police.hu queue time string representation to a number.
+  For example, calling this function with '1/2 óra' would result in 30 (minutes).
+ */
+
 export function extractCrossingInformation(content: string): CrossingInfo[] {
   const crossingNames = extractCrossingNames(content);
   const crossingOpenHours = extractOpenHours(content);
@@ -201,20 +202,20 @@ export function extractCrossingInformation(content: string): CrossingInfo[] {
     throw new Error(`Different number of parsed entries, got: ${JSON.stringify(parsedData)}`);
   }
 
-  const entries = zip(crossingNames, crossingOpenHours, crossingQueueTimes).map(
-    ([
-      [from, to] = ['', ''],
-      [openFrom, openUntil] = ['', ''],
-      { inbound, outbound } = { inbound: EMPTY_QUEUE_TIME, outbound: EMPTY_QUEUE_TIME }
-    ]) => ({
+  function toCrossingInfo([
+    [from, to] = ['', ''],
+    [openFrom, openUntil] = ['', ''],
+    { inbound, outbound } = { inbound: EMPTY_QUEUE_TIME, outbound: EMPTY_QUEUE_TIME }]): CrossingInfo
+  {
+    return {
       from,
       to,
       openFrom,
       openUntil,
       inbound,
       outbound
-    })
-  );
+    };
+  }
 
-  return entries;
+  return zip(crossingNames, crossingOpenHours, crossingQueueTimes).map(toCrossingInfo);
 }

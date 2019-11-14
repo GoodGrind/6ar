@@ -14,7 +14,7 @@ const EMPTY_CROSSINGS: Readonly<Crossings> = Object.freeze({
   Austria: []
 });
 
-function fetchTrafficContent(country: Country): Promise<[Country, CrossingInfo[]]> {
+async function fetchTrafficContent(country: Country): Promise<[Country, CrossingInfo[]]> {
   const url = infoUrlForCountry(country);
   const DEFAULT_REQUEST_TIMEOUT = 10000;
   const infoQuery = axios.get(url, { timeout: DEFAULT_REQUEST_TIMEOUT });
@@ -26,7 +26,7 @@ function fetchTrafficContent(country: Country): Promise<[Country, CrossingInfo[]
 export async function fetchCrossingInformation(): Promise<Crossings> {
   const infos = await Promise.all(COUNTRIES.map(fetchTrafficContent));
 
-  return infos.reduce((acc, [country, crossingInfo]) => ({
+  return infos.reduce((acc, [country, crossingInfo]): Crossings => ({
     ...acc,
     [country]: crossingInfo
   }), EMPTY_CROSSINGS);
@@ -45,6 +45,10 @@ export interface FetchTaskOptions {
 // Result of the function determines whether to continue the task or not.
 export type FetchTaskHandler = (data: Crossings) => Promise<boolean>;
 
+export function stopFetchTask(taskId: number): void {
+  clearInterval(taskId);
+}
+
 // Start a background task for regurarly fetching the border traffic information.
 // The background task can bpe terminated through the 'crossingHandler' return value (falsy value stops the task)
 // or by calling the 'stopFetchTask' on the resolved return value of the function.
@@ -60,7 +64,7 @@ export function startFetchTask(crossingHandler: FetchTaskHandler, options?: Part
   let retiresLeft = retries;
   let fetchTaskId: number;
 
-  async function fetchTask(retriesLeft: number) {
+  async function fetchTask(retriesLeft: number): Promise<void> {
     try {
       const crossingInfo = await fetchCrossingInformation();
       const doContinueTask = await crossingHandler(crossingInfo);
@@ -86,8 +90,4 @@ export function startFetchTask(crossingHandler: FetchTaskHandler, options?: Part
   // Thus we don't have to keep track of which setTimeout id to terminate it this module.
   fetchTaskId = setInterval(fetchTask, interval);
   return fetchTaskId;
-}
-
-export function stopFetchTask(taskId: number) {
-  clearInterval(taskId);
 }
