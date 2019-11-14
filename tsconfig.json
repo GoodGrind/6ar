@@ -57,6 +57,7 @@
     // "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
   },
   "exclude": [
+    "./lib",
     "**/__tests__" // execution/compilation of Jest tests is done through Jest itself, so we skip those in TSC. Otherwise they would end up in the compiled and distributed outputs as well.
   ]
 }
