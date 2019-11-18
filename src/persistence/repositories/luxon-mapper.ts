@@ -6,15 +6,13 @@ export function fromValue(value: unknown): unknown {
     return value;
   }
 
-  return value.toJSDate();
+  // we want to make sure that all dates get stored with an UTC TZ.
+  return value.toISO();
 }
 
 export function toValue(value: unknown): unknown {
-  if (!(value instanceof Date)) {
-    return value;
-  }
-
-  return DateTime.fromJSDate(value);
+  // no need to handle DateTime cases explicitly here, luxon sorts it out.
+  return value;
 }
 
 export const DATE_TO_LUXON_MAPPERS: Mappers = {
