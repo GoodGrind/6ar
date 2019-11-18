@@ -10,6 +10,7 @@ export interface Repository<T extends Entry> {
   // TODO(snorbi07): most likely this should be restricted to a type, where only [keyof T] field names are allowed in the criteria
   findWhere(criteria: Entry): Promise<T[]>;
   add(entry: T): Promise<IdType>;
+  addAll(entries: T[]): Promise<IdType[]>;
   // TODO(snorbi07): add support for Partial<T> as well, since sometimes we only want to work with a subset of a type
   update(id: IdType, newValue: T): Promise<IdType>;
   remove(id: IdType): Promise<void>;
@@ -60,6 +61,10 @@ export function createRawRepository<T extends Entry>(knex: Knex, tableName: stri
     return knex(tableName).returning(idField).insert(entry).then(([first, ]) => first);
   }
 
+  async function addAll(entries: T[]): Promise<IdType[]> {
+    return knex(tableName).returning(idField).insert(entries);
+  }
+
   async function update(id: number, newValue: T): Promise<number>;
   async function update(id: string, newValue: T): Promise<string>;
   async function update(id: IdType, newValue: T): Promise<IdType> {
@@ -75,6 +80,7 @@ export function createRawRepository<T extends Entry>(knex: Knex, tableName: stri
     findAll,
     findWhere,
     add,
+    addAll,
     update,
     remove
   };
@@ -103,6 +109,10 @@ export function mappedRepository<T extends Entry, M extends Entry>(repository: R
     async add(entry: M): Promise<IdType> {
       const mappedEntry: T = applyFromMappings(entry);
       return repository.add(mappedEntry);
+    },
+    async addAll(entries: M[]): Promise<IdType[]> {
+      const mappedEntries: T[] = entries.map((entry) => applyFromMappings(entry));
+      return repository.addAll(mappedEntries);
     },
     async update(id: IdType, newValue: M): Promise<IdType> {
       const mappedEntry: T = applyFromMappings(newValue);

@@ -5,11 +5,10 @@ import { BorderTrafficEntry, CrossingEntry, CrossingRepository, IdType, Reposito
 import { CrossingInfo } from './police-hu';
 import Pino from 'pino';
 
-const logger = Pino().child({module: 'police-hu'});
+const logger = Pino();
 
 async function findCrossingEntry(crossingRepository: CrossingRepository, crossingInfo: CrossingInfo): Promise<CrossingEntry | null> {
   const crossings = await crossingRepository.findAll();
-
   const crossingMatches: { fromDistance: number; toDistance: number; entry: CrossingEntry }[] = crossings.map((entry) => {
     const fromDistance: number = levenshtein.get(crossingInfo.from, entry.from);
     const toDistance: number = levenshtein.get(crossingInfo.to, entry.to);
@@ -18,7 +17,7 @@ async function findCrossingEntry(crossingRepository: CrossingRepository, crossin
 
   const [bestMatch, ] = sortBy(crossingMatches, ['fromDistance', 'toDistance']);  
   if (bestMatch.fromDistance !== 0 || bestMatch.toDistance !== 0) {
-    logger.warn({crossingInfo, crossingEntry: bestMatch.entry}, 'Partial name matching for crossing names');
+    logger.warn({expectedFrom: crossingInfo.from, expectedTo: crossingInfo.to, matchedFrom: bestMatch.entry.from, matchedTo: bestMatch.entry.to}, 'Partial name matching for crossing names');
   }
   
   return bestMatch.entry;
@@ -62,12 +61,6 @@ export async function persistCrossingInfo(crossingRepo: CrossingRepository, bord
   }
 
   const entries = toBorderTrafficEntry(recordedAt, crossingEntry.id, crossingInfo);
-  // TODO(snorbi07): missing batch insert based solution.
-  let addedEntries: IdType[] = [];
-  for (const entry of entries) {
-    const id = await borderTrafficRepository.add(entry);
-    addedEntries = [...addedEntries, id];
-  }
-
-  return addedEntries;
+  const ids = await borderTrafficRepository.addAll(entries);
+  return ids;
 }
