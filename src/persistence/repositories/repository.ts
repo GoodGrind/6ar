@@ -6,6 +6,7 @@ export type Entry = Record<string, object | number | string | undefined | null>;
 
 export interface Repository<T extends Entry> {
   find(id: IdType): Promise<T | null>;
+  findAll(): Promise<T[]>;
   // TODO(snorbi07): most likely this should be restricted to a type, where only [keyof T] field names are allowed in the criteria
   findWhere(criteria: Entry): Promise<T[]>;
   add(entry: T): Promise<IdType>;
@@ -47,6 +48,10 @@ export function createRawRepository<T extends Entry>(knex: Knex, tableName: stri
     return knex(tableName).where(idField, id).first();
   }
 
+  async function findAll(): Promise<T[]> {
+    return knex(tableName);
+  }
+
   async function findWhere(criteria: Entry): Promise<T[]> {
     return knex(tableName).where(criteria);
   }
@@ -67,6 +72,7 @@ export function createRawRepository<T extends Entry>(knex: Knex, tableName: stri
 
   return {
     find,
+    findAll,
     findWhere,
     add,
     update,
@@ -85,6 +91,10 @@ export function mappedRepository<T extends Entry, M extends Entry>(repository: R
         return null;
       }
       return applyToMappings(item);
+    },
+    async findAll(): Promise<M[]> {
+      const items = await repository.findAll();
+      return items.map(applyToMappings);
     },
     async findWhere(criteria: Entry): Promise<M[]> {
       const items = await repository.findWhere(criteria);
