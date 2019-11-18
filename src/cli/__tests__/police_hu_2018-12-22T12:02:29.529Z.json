@@ -1,0 +1,732 @@
+{
+  "Ukraine": [
+    {
+      "from": "Barabás",
+      "to": "Koson’",
+      "openFrom": "07:00",
+      "openUntil": "19:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "2 óra",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Beregsurány",
+      "to": "Астей",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "1 óra",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "3 óra",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Lónya",
+      "to": "Dzvinkove",
+      "openFrom": "07:00",
+      "openUntil": "18:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "1 óra",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Tiszabecs",
+      "to": "Vilok",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "2 óra",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Záhony",
+      "to": "Čop",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "1 óra",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "2 óra",
+        "bus": "",
+        "truck": "2 óra"
+      }
+    }
+  ],
+  "Romania": [
+    {
+      "from": "Ártánd",
+      "to": "Borş",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Battonya",
+      "to": "Turnu",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Csanádpalota Autópálya Határátkelő",
+      "to": "Nădlac II",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "1 óra",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "2 óra",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Csengersima",
+      "to": "Petea",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "1 óra",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Gyula",
+      "to": "Vărşand",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Kiszombor",
+      "to": "Cenad",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Létavértes",
+      "to": "Sacuieni",
+      "openFrom": "06:00",
+      "openUntil": "22:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Méhkerék",
+      "to": "Salonta",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Nagylak",
+      "to": "Nădlac",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Nyírábrány",
+      "to": "Valea Lui Mihai",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Vállaj",
+      "to": "Urziceni",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "3/4 óra",
+        "bus": "",
+        "truck": ""
+      }
+    }
+  ],
+  "Serbia": [
+    {
+      "from": "Ásotthalom",
+      "to": "Backi Vinogradi",
+      "openFrom": "07:00",
+      "openUntil": "19:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "2 óra",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Bácsalmás",
+      "to": "Bajmok",
+      "openFrom": "07:00",
+      "openUntil": "19:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "2 óra",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Bácsszentgyörgy",
+      "to": "Raština",
+      "openFrom": "07:00",
+      "openUntil": "19:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "2 óra",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Hercegszántó",
+      "to": "Bački Breg",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "2 óra",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Röszke",
+      "to": "Horgoš autópálya",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "1/2 óra",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "3 óra",
+        "bus": "2 óra",
+        "truck": "3 óra"
+      }
+    },
+    {
+      "from": "Röszke",
+      "to": "Horgoš közút",
+      "openFrom": "07:00",
+      "openUntil": "19:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "2 óra",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Tiszasziget",
+      "to": "Đala",
+      "openFrom": "07:00",
+      "openUntil": "19:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "1/2 óra",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Tompa",
+      "to": "Kelebija",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "3 óra",
+        "bus": "3 óra",
+        "truck": "2 óra"
+      }
+    }
+  ],
+  "Croatia": [
+    {
+      "from": "Barcs",
+      "to": "Terezino Polje",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Beremend",
+      "to": "Baranjsko Petrovo Selo",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Berzence",
+      "to": "Gola",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Drávaszabolcs",
+      "to": "Donji Miholjac",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Letenye",
+      "to": "Goričan I.",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Letenye Autópálya",
+      "to": "Goričan II.",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Udvar",
+      "to": "Dubosevica",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": "1/2 óra"
+      }
+    }
+  ],
+  "Austria": [
+    {
+      "from": "Bozsok",
+      "to": "Rechnitz",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Bucsu",
+      "to": "Schachendorf",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Fertőd",
+      "to": "Pamhagen",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Fertőrákos",
+      "to": "Mörbisch",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Hegyeshalom",
+      "to": "Nickelsdorf autópálya",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Hegyeshalom",
+      "to": "Nickelsdorf közút (1-es főút)",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Jánossomorja",
+      "to": "Andau",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Kópháza",
+      "to": "Deutschkreutz",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Kőszeg",
+      "to": "Rattersdorf",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Pinkamindszent",
+      "to": "Strem",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Rábafüzes",
+      "to": "Heiligenkreutz",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Sopron",
+      "to": "Klingenbach",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Szentpéterfa",
+      "to": "Eberau",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      }
+    },
+    {
+      "from": "Zsira",
+      "to": "Lutzmannsburg",
+      "openFrom": "00:00",
+      "openUntil": "24:00",
+      "inbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      },
+      "outbound": {
+        "car": "",
+        "bus": "",
+        "truck": ""
+      }
+    }
+  ]
+}

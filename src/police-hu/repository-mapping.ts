@@ -1,11 +1,27 @@
+import * as levenshtein from 'fast-levenshtein';
+import { sortBy } from 'lodash';
 import { DateTime } from 'luxon';
 import { BorderTrafficEntry, CrossingEntry, CrossingRepository, IdType, Repository } from '../persistence';
 import { CrossingInfo } from './police-hu';
+import Pino from 'pino';
 
+const logger = Pino().child({module: 'police-hu'});
 
 async function findCrossingEntry(crossingRepository: CrossingRepository, crossingInfo: CrossingInfo): Promise<CrossingEntry | null> {
-  const crossingName = `${crossingInfo.from} - ${crossingInfo.to}`;
-  return await crossingRepository.findByName(crossingName);
+  const crossings = await crossingRepository.findAll();
+
+  const crossingMatches: { fromDistance: number; toDistance: number; entry: CrossingEntry }[] = crossings.map((entry) => {
+    const fromDistance: number = levenshtein.get(crossingInfo.from, entry.from);
+    const toDistance: number = levenshtein.get(crossingInfo.to, entry.to);
+    return {fromDistance, toDistance, entry};
+  });
+
+  const [bestMatch, ] = sortBy(crossingMatches, ['fromDistance', 'toDistance']);  
+  if (bestMatch.fromDistance !== 0 || bestMatch.toDistance !== 0) {
+    logger.warn({crossingInfo, crossingEntry: bestMatch.entry}, 'Partial name matching for crossing names');
+  }
+  
+  return bestMatch.entry;
 }
 
 function toBorderTrafficEntry(recordedAt: DateTime, crossingId: number, crossingInfo: CrossingInfo): BorderTrafficEntry[] {
