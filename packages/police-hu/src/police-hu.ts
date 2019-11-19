@@ -86,6 +86,9 @@ export function extractWorkingHours(text: string): [string, string] {
   const [open, close] = text.split('-');
   const openParsedToFloat = parseFloat(open);
   const closeParsedToFloat = parseFloat(close);
+  const twoDecimals = 2;
+  const paddingToGivenLength = 5;
+  const paddingWithZeroes = '0';
 
   if (isNaN(openParsedToFloat) || isNaN(closeParsedToFloat)) {
     return [
@@ -94,8 +97,8 @@ export function extractWorkingHours(text: string): [string, string] {
     ];
   }
   return[
-    openParsedToFloat.toFixed(2).padStart(5, '0').replace('.', ':'),
-    closeParsedToFloat.toFixed(2).padStart(5, '0').replace('.', ':')
+    openParsedToFloat.toFixed(twoDecimals).padStart(paddingToGivenLength, paddingWithZeroes).replace('.', ':'),
+    closeParsedToFloat.toFixed(twoDecimals).padStart(paddingToGivenLength, paddingWithZeroes).replace('.', ':')
    ];
 }
 
