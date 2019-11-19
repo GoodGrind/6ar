@@ -82,47 +82,23 @@ export function extractCrossingNames(htmlContent: string) {
   return crossingTexts.map(extractLocationNames);
 }
 
-function extractWorkingHours(text: string): [string, string] {
-  const [open, close,...rest] = text.split('-');
-  let openNumber= parseInt(open);
-  let closeNumber= parseInt(close);
+export function extractWorkingHours(text: string): [string, string] {
+  const [open, close] = text.split('-');
+  const openParsedToFloat = parseFloat(open);
+  const closeParsedToFloat = parseFloat(close);
 
-
-  if ( isNaN(openNumber) || isNaN(closeNumber) ) {
-    return[
-      ('00:00'),
-      ('00:00')
+  if (isNaN(openParsedToFloat) || isNaN(closeParsedToFloat)) {
+    return [
+      '00:00',
+      '00:00'
     ];
   }
-
-  if (rest === ["óra"]){
-    return[
-      `0${open}:00`,
-      `${close}:00`
-    ];
-  }
-  return [
-  open.trim().replace('.', ':'),
-  close.trim().replace('.', ':')
-  ];
-
-  console.log(open);
-  console.log(close)
-
+  return[
+    openParsedToFloat.toFixed(2).padStart(5, '0').replace('.', ':'),
+    closeParsedToFloat.toFixed(2).padStart(5, '0').replace('.', ':')
+   ];
 }
 
-/*
-function extractWorkingHours(text: string): [string, string] {
-  const [open, close, ...rest] = text.split('-');
-  if (!isEmpty(rest)) {
-    throw new Error(`Error occured during the parsing of working hours: ${text}`);
-  }
-  return [
-    open.trim().replace('.', ':'),
-    close.trim().replace('.', ':')
-  ];
-}
-*/
 export function extractOpenHours(htmlContent: string): Array<[string, string]> {
   const $ = cheerio.load(htmlContent);
 

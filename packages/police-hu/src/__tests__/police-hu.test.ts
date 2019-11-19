@@ -3,14 +3,13 @@ import * as path from 'path';
 import { promisify } from 'util';
 import {
   extractCrossingNames, extractOpenHours,
-  extractQueueTimes, queueTimeToMinutes
+  extractQueueTimes, extractWorkingHours, queueTimeToMinutes
 } from '..';
 
 const readFile = promisify(fs.readFile);
 
 const NUMBER_OF_CROSSINGS_TO_SERBIA = 8;
 const NUMBER_OF_CROSSINGS_TO_UKRAINE = 5;
-const NUMBER_OF_CROSSINGS_TO_CROATIA = 7
 
 test('test Ukraine crossing name parsing', async () => {
   const htmlPath = path.join(__dirname, 'police-hu-info-ukraine.html');
@@ -109,14 +108,15 @@ test('parsing of open hours', async () => {
   expect(openHours[6]).toEqual(['07:00', '19:00']);
 });
 
-test('parsing of open hours with special format \n" 0-24 óra\n" ', async () =>{
-    const htmlPath = path.join(__dirname, 'police-hu-info-croatia.html');
-    const policeHuHtml = await readFile(htmlPath, { encoding: 'utf-8' });
-    const openHours = extractOpenHours(policeHuHtml);
-    expect(openHours.length).toBe(NUMBER_OF_CROSSINGS_TO_CROATIA);
-    expect(openHours[4]).toEqual(['00:00','24:00']);
+test('parsing non-general format of open hours into the standard format', async () => {
+  const nonGeneralFormat = extractWorkingHours('0-24 óra');
+  expect(nonGeneralFormat).toEqual(['00:00', '24:00']);
+});
 
-})
+test('parsing open hours which begins with letters to a standard [n\'00:00,00:00n\'] format ', async () => {
+    const unParsableFormat = extractWorkingHours('Áramszünet miatt zárva!');
+    expect(unParsableFormat).toEqual(['00:00', '00:00']);
+});
 
 test('parsing of queue times', async () => {
   const htmlPath = path.join(__dirname, 'police-hu-info-ukraine.html');
