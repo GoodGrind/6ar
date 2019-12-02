@@ -1,20 +1,52 @@
 {
-  "name": "@6ar/6ar",
+  "name": "6ar",
   "version": "1.0.0",
   "description": "Border traffic monitoring system",
-  "main": "index.js",
-  "scripts": {
-    "bootstrap": "npx lerna bootstrap --hoist",
-    "build": "npx lerna run build",
-    "watch": "npx lerna run --parallel watch",
-    "test": "npx jest",
-    "lint": "npx lerna run lint",
-    "lint:editorconfig": "npx editorconfig-checker"
-  },
-  "author": "GoodGrind",
+  "author": "GoodGrind Kft.",
   "license": "GPL-3.0-or-later",
-  "devDependencies": {
-    "lerna": "3.13.1"
+  "homepage": "http://6ar.hu",
+  "bugs": {
+    "url": "https://github.com/snorbi07/6ar/issues"
   },
-  "dependencies": {}
+  "main": "index.js",
+  "typeings": "lib/index.d.ts",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "watch": "tsc -w",
+    "lint:typescript": "eslint ./src/**/*.ts",
+    "lint": "npm run lint:typescript",
+    "db:migrate": "knex --knexfile knexfile.ts migrate:latest",
+    "db:seed": "knex --knexfile knexfile.ts seed:run"
+  },
+  "dependencies": {
+    "axios": "0.19.0",
+    "cheerio": "1.0.0-rc.2",
+    "knex": "0.20.1",
+    "lodash": "4.17.15",
+    "luxon": "1.21.1",
+    "pg": "7.12.1",
+    "ts-node-dev": "^1.0.0-pre.44"
+  },
+  "devDependencies": {
+    "@types/cheerio": "0.22.14",
+    "@types/jest": "24.0.23",
+    "@types/lodash": "4.14.147",
+    "@types/luxon": "1.15.2",
+    "@typescript-eslint/eslint-plugin": "2.7.0",
+    "@typescript-eslint/parser": "2.7.0",
+    "eslint": "6.6.0",
+    "eslint-plugin-jest": "23.0.3",
+    "jest": "24.9.0",
+    "ts-jest": "24.1.0",
+    "ts-node": "8.5.0",
+    "typescript": "3.7.2"
+  }
 }
