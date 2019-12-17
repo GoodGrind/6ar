@@ -3,7 +3,7 @@ import * as path from 'path';
 import { promisify } from 'util';
 import {
   extractCrossingNames, extractOpenHours,
-  extractQueueTimes, queueTimeToMinutes
+  extractQueueTimes, extractWorkingHours, queueTimeToMinutes
 } from '..';
 
 const readFile = promisify(fs.readFile);
@@ -115,6 +115,16 @@ describe('parsing components', () => {
     expect(openHours[4]).toStrictEqual(['00:00', '24:00']);
     expect(openHours[5]).toStrictEqual(['07:00', '19:00']);
     expect(openHours[6]).toStrictEqual(['07:00', '19:00']);
+  });
+
+  it('parsing non-general format of open hours into the standard format', async () => {
+    const nonGeneralFormat = extractWorkingHours('0-24 óra');
+    expect(nonGeneralFormat).toStrictEqual(['00:00', '24:00']);
+  });
+
+  it('parsing open hours which begins with letters to a standard [\'00:00\',\'00:00\'] format ', async () => {
+    const unParsableFormat = extractWorkingHours('Áramszünet miatt zárva!');
+    expect(unParsableFormat).toStrictEqual(['00:00', '00:00']);
   });
 
   it('parsing of queue times', async () => {
