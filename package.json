@@ -22,7 +22,7 @@
     "test": "jest",
     "watch": "tsc -w",
     "lint:typescript": "eslint ./src/**/*.ts",
-    "lint": "npm run lint:typescript",
+    "lint": "yarn lint:typescript",
     "db:migrate": "knex --knexfile knexfile.ts migrate:latest",
     "db:seed": "knex --knexfile knexfile.ts seed:run"
   },
