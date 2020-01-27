@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { promisify } from 'util';
 import {
-  extractCrossingNames, extractOpenHours,
+  extractCrossingNames, extractOpenHours, extractLocationNames,
   extractQueueTimes, extractWorkingHours, queueTimeToMinutes
 } from '..';
 
@@ -15,7 +15,7 @@ describe('crossing name parsing', () => {
   it('test Ukraine crossing name parsing', async () => {
     expect.hasAssertions();
     const htmlPath = path.join(__dirname, 'police-hu-info-ukraine.html');
-    const policeHuHtml = await readFile(htmlPath, { encoding: 'utf-8' });
+    const policeHuHtml = await readFile(htmlPath, {encoding: 'utf-8'});
     const names = extractCrossingNames(policeHuHtml);
     expect(names).toHaveLength(NUMBER_OF_CROSSINGS_TO_UKRAINE);
     expect(names[0]).toStrictEqual(['Barabás', 'Koson’']);
@@ -28,7 +28,7 @@ describe('crossing name parsing', () => {
   it('test Romanian crossing name parsing', async () => {
     expect.hasAssertions();
     const htmlPath = path.join(__dirname, 'police-hu-info-romania.html');
-    const policeHuHtml = await readFile(htmlPath, { encoding: 'utf-8' });
+    const policeHuHtml = await readFile(htmlPath, {encoding: 'utf-8'});
     const names = extractCrossingNames(policeHuHtml);
     const NUMBER_OF_CROSSINGS_TO_ROMANIA = 11;
     expect(names).toHaveLength(NUMBER_OF_CROSSINGS_TO_ROMANIA);
@@ -48,7 +48,7 @@ describe('crossing name parsing', () => {
   it('test Serbian crossing name parsing', async () => {
     expect.hasAssertions();
     const htmlPath = path.join(__dirname, 'police-hu-info-serbia.html');
-    const policeHuHtml = await readFile(htmlPath, { encoding: 'utf-8' });
+    const policeHuHtml = await readFile(htmlPath, {encoding: 'utf-8'});
     const names = extractCrossingNames(policeHuHtml);
     expect(names).toHaveLength(NUMBER_OF_CROSSINGS_TO_SERBIA);
     expect(names[0]).toStrictEqual(['Ásotthalom', 'Backi Vinogradi']);
@@ -64,7 +64,7 @@ describe('crossing name parsing', () => {
   it('test Croatian crossing name parsing', async () => {
     expect.hasAssertions();
     const htmlPath = path.join(__dirname, 'police-hu-info-croatia.html');
-    const policeHuHtml = await readFile(htmlPath, { encoding: 'utf-8' });
+    const policeHuHtml = await readFile(htmlPath, {encoding: 'utf-8'});
     const names = extractCrossingNames(policeHuHtml);
     const NUMBER_OF_CROSSINGS_TO_CROATIA = 7;
     expect(names).toHaveLength(NUMBER_OF_CROSSINGS_TO_CROATIA);
@@ -80,7 +80,7 @@ describe('crossing name parsing', () => {
   it('test Austrian crossing name parsing', async () => {
     expect.hasAssertions();
     const htmlPath = path.join(__dirname, 'police-hu-info-austria.html');
-    const policeHuHtml = await readFile(htmlPath, { encoding: 'utf-8' });
+    const policeHuHtml = await readFile(htmlPath, {encoding: 'utf-8'});
     const names = extractCrossingNames(policeHuHtml);
     const NUMBER_OF_CROSSINGS_TO_AUSTRIA = 14;
     expect(names).toHaveLength(NUMBER_OF_CROSSINGS_TO_AUSTRIA);
@@ -98,6 +98,21 @@ describe('crossing name parsing', () => {
     expect(names[11]).toStrictEqual(['Sopron', 'Klingenbach']);
     expect(names[12]).toStrictEqual(['Szentpéterfa', 'Eberau']);
     expect(names[13]).toStrictEqual(['Zsira', 'Lutzmannsburg']);
+  });
+
+  it('tests name parsing if the crossing name is a random text', async () => {
+    const borderClosed = 'Border is closed';
+    expect(extractLocationNames(borderClosed)).toThrowError(/Unable to parse/);
+  });
+
+  it('tests corner cases when crossing text gets a malformed input', async () => {
+    expect.hasAssertions();
+    const malformedArrayLastLetterIsMissing = 'Bácsalmás - Bajmok';
+    const malformedArraySecondElementIsEmpty =  'Bácsalmás – Bajmok- ';
+    const missingLastLetter = extractLocationNames(malformedArrayLastLetterIsMissing);
+    const emptySecondElement = extractLocationNames(malformedArraySecondElementIsEmpty);
+    expect(missingLastLetter).toStrictEqual(['Bácsalmás', 'Bajmok']);
+    expect(emptySecondElement).toStrictEqual(['Bácsalmás', 'Bajmok']);
   });
 });
 
@@ -118,11 +133,13 @@ describe('parsing components', () => {
   });
 
   it('parsing non-general format of open hours into the standard format', async () => {
+    expect.hasAssertions();
     const nonGeneralFormat = extractWorkingHours('0-24 óra');
     expect(nonGeneralFormat).toStrictEqual(['00:00', '24:00']);
   });
 
-  it('parsing open hours which begins with letters to a standard [\'00:00\',\'00:00\'] format ', async () => {
+  it('parsing open hours which begins with letters to a standard [\'00:00\',\'00:00\'] format', async () => {
+    expect.hasAssertions();
     const unParsableFormat = extractWorkingHours('Áramszünet miatt zárva!');
     expect(unParsableFormat).toStrictEqual(['00:00', '00:00']);
   });
@@ -183,5 +200,11 @@ describe('wait time conversions', () => {
     expect.hasAssertions();
     expect(queueTimeToMinutes('not a number')).toStrictEqual(NaN);
     expect(queueTimeToMinutes('1')).toStrictEqual(NaN);
+  });
+
+  it('test conversion of police.hu queue times: numbers with unsupported formats', async () => {
+    expect.hasAssertions();
+    expect(queueTimeToMinutes('0,25 óra')).toStrictEqual(0);
+    expect(queueTimeToMinutes('1 1/5 óra')).toStrictEqual(0);
   });
 });
