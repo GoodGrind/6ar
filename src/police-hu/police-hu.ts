@@ -40,12 +40,29 @@ export function infoUrlForCountry(country: Country): string {
   return `${POLICE_HU_INFO_BASE_URL}${CROSSING_INFO_QUERY_PARAMS[country]}`;
 }
 
-function extractLocationNames(crossingText: string): [string, string] {
+export function extractLocationNames(crossingText: string): [string, string] {
   // example input to clean up 'Bácsalmás - Bajmok-'
   // remove trailing '-', since we want to split into two parts using the remaining '-' char
-  const text = crossingText.substring(0, crossingText.length - 1);
+
+  const crossingTextRemoveTrailingWhitespaces = crossingText.trim();
+  let text;
+  const lastCharacter = crossingTextRemoveTrailingWhitespaces.charAt(crossingTextRemoveTrailingWhitespaces.length - 1);
+  //to avoid malformed output, we need to remove the "-" character from the end of crossingText if there are any.
+  if (lastCharacter === '-') {
+    text = crossingTextRemoveTrailingWhitespaces.substring(0, crossingTextRemoveTrailingWhitespaces.length - 1);
+  }
+  else {
+    text = crossingTextRemoveTrailingWhitespaces.substring(0, crossingTextRemoveTrailingWhitespaces.length);
+  }
+
   let crossingParts = text.split('-');
   const EXPECTED_NUMBER_OF_NAME_SEGMENTS = 2;
+
+  // at this point, if we still don't have the expected number of segments something went wrong
+  if (crossingParts.length < EXPECTED_NUMBER_OF_NAME_SEGMENTS) {
+    // FIXME: change this to log an error and return the whole text instead. that would be a more resilient approach
+    throw new Error(`Unable to parse crossing name for text:${text}`);
+  }
 
   if (crossingParts.length > EXPECTED_NUMBER_OF_NAME_SEGMENTS) {
     // there a crossings with wierd name, such as'Hegyeshalom-Nickelsdorf közút (1-es főút)'
@@ -58,12 +75,6 @@ function extractLocationNames(crossingText: string): [string, string] {
     // in some cases the '–' charachter is used, so we try splitting based on that.
     // an example for this is 'Bácsszentgyörgy–Raština '
     crossingParts = text.split('–');
-  }
-
-  // at this point, if we still don't have the expected number of segments something went wrong
-  if (crossingParts.length < EXPECTED_NUMBER_OF_NAME_SEGMENTS) {
-    // FIXME: change this to log an error and return the whole text instead. that would be a more resilient approach
-    throw new Error(`Unable to parse crossing name for text:${text}`);
   }
 
   const CROSSING_FROM_INDEX = 0;
@@ -99,7 +110,7 @@ export function extractWorkingHours(text: string): [string, string] {
   return[
     openParsedToFloat.toFixed(twoDecimals).padStart(paddingToGivenLength, paddingWithZeroes).replace('.', ':'),
     closeParsedToFloat.toFixed(twoDecimals).padStart(paddingToGivenLength, paddingWithZeroes).replace('.', ':')
-   ];
+  ];
 }
 
 export function extractOpenHours(htmlContent: string): Array<[string, string]> {
@@ -149,12 +160,23 @@ export function extractQueueTimes(htmlContent: string): Array<{ inbound: QueueTi
     .map(extractQueueText).get() as any as Array<{ inbound: QueueTime, outbound: QueueTime }>;
 }
 
-/*
-  Converts the police.hu queue time string representation to a number.
-  For example, calling this function with '1/2 óra' would result in 30 (minutes).
- */
 export function queueTimeToMinutes(queueTime: string): number {
-  if (isEmpty(queueTime)) {
+  /*we want to cover the rational number values which cannot be parsed into a usable format e.g '1 1/2 óra'
+  to a standard return value of 0
+  */
+  let numberOfDigitsInqueueTime= 0;
+
+  for (const counter of queueTime){
+    if (parseInt(counter)){
+      numberOfDigitsInqueueTime++;
+    }
+  }
+  /*
+    Converts the police.hu queue time string representation to a number.
+    For example, calling this function with '0/2 óra' would result in 30 (minutes).
+     TODO: if the text is not parsable, log an error which contains the whole imparsable text.
+   */
+  if (isEmpty(queueTime) || numberOfDigitsInqueueTime>=3) {
     return 0;
   }
 
