@@ -6,6 +6,18 @@ export type Crossings = {
   [K in Country]: CrossingInfo[];
 };
 
+export type RawCrossingData = {
+  [K in Country]: string;
+};
+
+const EMPTY_UNPARSED_CROSSINGS: Readonly<RawCrossingData> = Object.freeze({
+  Ukraine: '',
+  Romania: '',
+  Serbia: '',
+  Croatia: '',
+  Austria: ''
+});
+
 const EMPTY_CROSSINGS: Readonly<Crossings> = Object.freeze({
   Ukraine: [],
   Romania: [],
@@ -14,22 +26,28 @@ const EMPTY_CROSSINGS: Readonly<Crossings> = Object.freeze({
   Austria: []
 });
 
-async function fetchTrafficContent(country: Country): Promise<[Country, CrossingInfo[]]> {
+async function fetchTrafficContent(country: Country): Promise<[Country, CrossingInfo[], string]> {
   const url = infoUrlForCountry(country);
   const DEFAULT_REQUEST_TIMEOUT = 10000;
   const infoQuery = axios.get(url, { timeout: DEFAULT_REQUEST_TIMEOUT });
-  return infoQuery.then(
-    (response): [Country, CrossingInfo[]] => [country, extractCrossingInformation(response.data)]
-  );
+  return infoQuery
+    .then(
+      (response): [Country, CrossingInfo[], string] => [country, extractCrossingInformation(response.data), response.data]
+    );
 }
-
-export async function fetchCrossingInformation(): Promise<Crossings> {
+export async function fetchCrossingInformation(): Promise<[Crossings, RawCrossingData]> {
   const infos = await Promise.all(COUNTRIES.map(fetchTrafficContent));
-
-  return infos.reduce((acc, [country, crossingInfo]): Crossings => ({
+  const crossings = infos.reduce((acc, [country, crossingInfo]): Crossings => ({
     ...acc,
     [country]: crossingInfo
   }), EMPTY_CROSSINGS);
+
+  const rawCrossingData: RawCrossingData = EMPTY_UNPARSED_CROSSINGS;
+  for(const info of infos) {
+    const [country, , rawData] = info;
+    rawCrossingData[country] = rawData;
+  }
+  return [crossings, rawCrossingData];
 }
 
 export interface FetchTaskOptions {
@@ -43,7 +61,7 @@ export interface FetchTaskOptions {
 }
 
 // Result of the function determines whether to continue the task or not.
-export type FetchTaskHandler = (data: Crossings) => Promise<boolean>;
+export type FetchTaskHandler = (data: Crossings, unparsedData: RawCrossingData) => Promise<boolean>;
 
 export function stopFetchTask(taskId: number): void {
   clearInterval(taskId);
@@ -66,8 +84,8 @@ export function startFetchTask(crossingHandler: FetchTaskHandler, options?: Part
 
   async function fetchTask(retriesLeft: number): Promise<void> {
     try {
-      const crossingInfo = await fetchCrossingInformation();
-      const doContinueTask = await crossingHandler(crossingInfo);
+      const [crossingInfo, rawCrossingData] = await fetchCrossingInformation();
+      const doContinueTask = await crossingHandler(crossingInfo, rawCrossingData);
       if (!doContinueTask) {
         stopFetchTask(fetchTaskId);
       }
