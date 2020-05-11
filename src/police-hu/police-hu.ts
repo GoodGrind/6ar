@@ -1,5 +1,7 @@
 import * as cheerio from 'cheerio';
 import { isEmpty, zip } from 'lodash';
+import Pino, {stdTimeFunctions} from 'pino';
+
 
 const POLICE_HU_INFO_BASE_URL = 'http://www.police.hu/hu/hirek-es-informaciok/hatarinfo';
 
@@ -36,6 +38,9 @@ export interface CrossingInfo {
   outbound: QueueTime;
 }
 
+const loggerError = Pino({level: 'error', timestamp: stdTimeFunctions.isoTime, prettyPrint: true});
+const loggerWarn = Pino({level: 'warn', timestamp: stdTimeFunctions.isoTime, prettyPrint: true});
+
 export function infoUrlForCountry(country: Country): string {
   return `${POLICE_HU_INFO_BASE_URL}${CROSSING_INFO_QUERY_PARAMS[country]}`;
 }
@@ -55,13 +60,13 @@ export function extractLocationNames(crossingText: string): [string, string] {
     text = crossingTextRemoveTrailingWhitespaces.substring(0, crossingTextRemoveTrailingWhitespaces.length);
   }
 
-  let crossingParts = text.split('-');
+  let crossingParts = text.replace('–','-').split('-');
   const EXPECTED_NUMBER_OF_NAME_SEGMENTS = 2;
 
   // at this point, if we still don't have the expected number of segments something went wrong
   if (crossingParts.length < EXPECTED_NUMBER_OF_NAME_SEGMENTS) {
-    // FIXME: change this to log an error and return the whole text instead. that would be a more resilient approach
-    throw new Error(`Unable to parse crossing name for text:${text}`);
+    loggerError.error(`Unable to parse crossing name for text: '${crossingText}'`);
+    throw new Error(`Unable to parse crossing name for text: '${text}'`);
   }
 
   if (crossingParts.length > EXPECTED_NUMBER_OF_NAME_SEGMENTS) {
@@ -69,12 +74,6 @@ export function extractLocationNames(crossingText: string): [string, string] {
     // in such a case we just make sure to concatanate the second and remaining parts into 1 segment
     const [first, ...rest] = crossingParts;
     crossingParts = [first, rest.join('-')];
-  }
-
-  if (crossingParts.length < EXPECTED_NUMBER_OF_NAME_SEGMENTS) {
-    // in some cases the '–' charachter is used, so we try splitting based on that.
-    // an example for this is 'Bácsszentgyörgy–Raština '
-    crossingParts = text.split('–');
   }
 
   const CROSSING_FROM_INDEX = 0;
@@ -102,6 +101,7 @@ export function extractWorkingHours(text: string): [string, string] {
   const paddingWithZeroes = '0';
 
   if (isNaN(openParsedToFloat) || isNaN(closeParsedToFloat)) {
+    loggerWarn.warn(`Working hours are not in the right format. Text '${text}' will be parsed to a standard ['00:00','00:00'] format.`);
     return [
       '00:00',
       '00:00'
@@ -174,9 +174,13 @@ export function queueTimeToMinutes(queueTime: string): number {
   /*
     Converts the police.hu queue time string representation to a number.
     For example, calling this function with '0/2 óra' would result in 30 (minutes).
-     TODO: if the text is not parsable, log an error which contains the whole imparsable text.
    */
+  if (numberOfDigitsInqueueTime === 0) {
+    loggerError.error(`The text of queue time '${queueTime}' is not parsable. It doesn't contain numeric values`);
+  }
+
   if (isEmpty(queueTime) || numberOfDigitsInqueueTime>=3) {
+    loggerError.error(`The text of queue time '${queueTime}' is not parsable. A standard '0' value will be returned. `);
     return 0;
   }
 

@@ -101,8 +101,13 @@ describe('crossing name parsing', () => {
   });
 
   it('tests name parsing if the crossing name is a random text', async () => {
+    expect.hasAssertions();
     const borderClosed = 'Border is closed';
-    expect(extractLocationNames(borderClosed)).toThrowError(/Unable to parse/);
+    //NOTE  You must wrap the code in a function, otherwise the error will not be caught and the assertion will fail.
+    function thrownError () {
+      extractLocationNames(borderClosed);
+    }
+    expect(thrownError).toThrow(/Unable to parse/);
   });
 
   it('tests corner cases when crossing text gets a malformed input', async () => {
@@ -199,12 +204,13 @@ describe('wait time conversions', () => {
   it('test conversion of police.hu queue times: unsupported input formats should return NaN', async () => {
     expect.hasAssertions();
     expect(queueTimeToMinutes('not a number')).toStrictEqual(NaN);
+    expect(queueTimeToMinutes('Nincs 15 percet meghaladó várakozási idő')).toStrictEqual(NaN);
     expect(queueTimeToMinutes('1')).toStrictEqual(NaN);
   });
 
   it('test conversion of police.hu queue times: numbers with unsupported formats', async () => {
     expect.hasAssertions();
-    expect(queueTimeToMinutes('0,25 óra')).toStrictEqual(0);
+    expect(queueTimeToMinutes('1,25 óra')).toStrictEqual(0);
     expect(queueTimeToMinutes('1 1/5 óra')).toStrictEqual(0);
   });
 });
