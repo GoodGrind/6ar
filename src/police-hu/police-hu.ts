@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
-import { isEmpty, zip } from 'lodash';
+import {isEmpty, zip} from 'lodash';
+import Pino, {stdTimeFunctions} from 'pino';
 
 const POLICE_HU_INFO_BASE_URL = 'http://www.police.hu/hu/hirek-es-informaciok/hatarinfo';
 
@@ -36,6 +37,8 @@ export interface CrossingInfo {
   outbound: QueueTime;
 }
 
+const logger = Pino({timestamp: stdTimeFunctions.isoTime, prettyPrint: true});
+
 export function infoUrlForCountry(country: Country): string {
   return `${POLICE_HU_INFO_BASE_URL}${CROSSING_INFO_QUERY_PARAMS[country]}`;
 }
@@ -50,18 +53,17 @@ export function extractLocationNames(crossingText: string): [string, string] {
   //to avoid malformed output, we need to remove the "-" character from the end of crossingText if there are any.
   if (lastCharacter === '-') {
     text = crossingTextRemoveTrailingWhitespaces.substring(0, crossingTextRemoveTrailingWhitespaces.length - 1);
-  }
-  else {
+  } else {
     text = crossingTextRemoveTrailingWhitespaces.substring(0, crossingTextRemoveTrailingWhitespaces.length);
   }
 
-  let crossingParts = text.split('-');
+  let crossingParts = text.replace('–', '-').split('-');
   const EXPECTED_NUMBER_OF_NAME_SEGMENTS = 2;
 
   // at this point, if we still don't have the expected number of segments something went wrong
   if (crossingParts.length < EXPECTED_NUMBER_OF_NAME_SEGMENTS) {
-    // FIXME: change this to log an error and return the whole text instead. that would be a more resilient approach
-    throw new Error(`Unable to parse crossing name for text:${text}`);
+    logger.error(`Unable to parse crossing name for text: '${crossingText}'`);
+    throw new Error(`Unable to parse crossing name for text: '${text}'`);
   }
 
   if (crossingParts.length > EXPECTED_NUMBER_OF_NAME_SEGMENTS) {
@@ -69,12 +71,6 @@ export function extractLocationNames(crossingText: string): [string, string] {
     // in such a case we just make sure to concatanate the second and remaining parts into 1 segment
     const [first, ...rest] = crossingParts;
     crossingParts = [first, rest.join('-')];
-  }
-
-  if (crossingParts.length < EXPECTED_NUMBER_OF_NAME_SEGMENTS) {
-    // in some cases the '–' charachter is used, so we try splitting based on that.
-    // an example for this is 'Bácsszentgyörgy–Raština '
-    crossingParts = text.split('–');
   }
 
   const CROSSING_FROM_INDEX = 0;
@@ -86,7 +82,7 @@ export function extractCrossingNames(htmlContent: string) {
   const $ = cheerio.load(htmlContent);
 
   // Due to how Cheerio works and makes use of `this` scoping, a named function is used instead of arrow function
-  const crossingTexts = $('#borderinfo-accordions a > span:first-of-type').map(function(this: Cheerio) {
+  const crossingTexts = $('#borderinfo-accordions a > span:first-of-type').map(function (this: Cheerio) {
     return $(this).text().trim();
   }).get();
 
@@ -102,12 +98,13 @@ export function extractWorkingHours(text: string): [string, string] {
   const paddingWithZeroes = '0';
 
   if (isNaN(openParsedToFloat) || isNaN(closeParsedToFloat)) {
+    logger.warn(`Working hours are not in the right format. Text '${text}' will be parsed to a standard ['00:00','00:00'] format.`);
     return [
       '00:00',
       '00:00'
     ];
   }
-  return[
+  return [
     openParsedToFloat.toFixed(twoDecimals).padStart(paddingToGivenLength, paddingWithZeroes).replace('.', ':'),
     closeParsedToFloat.toFixed(twoDecimals).padStart(paddingToGivenLength, paddingWithZeroes).replace('.', ':')
   ];
@@ -116,19 +113,19 @@ export function extractWorkingHours(text: string): [string, string] {
 export function extractOpenHours(htmlContent: string): Array<[string, string]> {
   const $ = cheerio.load(htmlContent);
 
-  const hoursText = $('#borderinfo-accordions a > span:nth-of-type(2)').map(function(this: Cheerio) {
+  const hoursText = $('#borderinfo-accordions a > span:nth-of-type(2)').map(function (this: Cheerio) {
     return $(this).text();
   }).get();
 
   return hoursText.map(extractWorkingHours);
 }
 
-export function extractQueueTimes(htmlContent: string): Array<{ inbound: QueueTime, outbound: QueueTime }> {
+export function extractQueueTimes(htmlContent: string): Array<{ inbound: QueueTime; outbound: QueueTime }> {
   const $ = cheerio.load(htmlContent);
 
   // Forced casting is needed here, since Cheerio's type definition for 'get' doesn't take into account mapping,
   // and always returns a string.
-  function extractQueueText(this: Cheerio): { inbound: QueueTime, outbound: QueueTime } {
+  function extractQueueText(this: Cheerio): { inbound: QueueTime; outbound: QueueTime } {
     const $queue = $(this);
 
     // Find DOM entries that contain the inbound traffic information
@@ -136,14 +133,14 @@ export function extractQueueTimes(htmlContent: string): Array<{ inbound: QueueTi
 
     const $inTraffic = $queue.find('div.col-md-3:nth-of-type(2) > div:not(.label)');
 
-    const [outbound, ...restOut] = $outTraffic.map(function(this: Cheerio) {
+    const [outbound, ...restOut] = $outTraffic.map(function (this: Cheerio) {
       return extractTrafficEntries($(this));
     }).get() as any as QueueTime[];
     if (!isEmpty(restOut)) {
       throw new Error(`Error occured during the parsing of outbound traffic\n: ${htmlContent}`);
     }
 
-    const [inbound, ...restIn] = $inTraffic.map(function(this: Cheerio) {
+    const [inbound, ...restIn] = $inTraffic.map(function (this: Cheerio) {
       return extractTrafficEntries($(this));
     }).get() as any as QueueTime[];
     if (!isEmpty(restIn)) {
@@ -157,27 +154,36 @@ export function extractQueueTimes(htmlContent: string): Array<{ inbound: QueueTi
   }
 
   return $('#borderinfo-accordions div.row')
-    .map(extractQueueText).get() as any as Array<{ inbound: QueueTime, outbound: QueueTime }>;
+    .map(extractQueueText).get() as any as Array<{ inbound: QueueTime; outbound: QueueTime }>;
 }
 
 export function queueTimeToMinutes(queueTime: string): number {
   /*we want to cover the rational number values which cannot be parsed into a usable format e.g '1 1/2 óra'
   to a standard return value of 0
   */
-  let numberOfDigitsInqueueTime= 0;
+  const MAX_NUMBER_OF_QUEUETIME_DIGITS = 3;
+  let numberOfDigitsInqueueTime = 0;
 
-  for (const counter of queueTime){
-    if (parseInt(counter)){
+  for (const counter of queueTime) {
+    if (parseInt(counter)) {
       numberOfDigitsInqueueTime++;
     }
   }
   /*
     Converts the police.hu queue time string representation to a number.
     For example, calling this function with '0/2 óra' would result in 30 (minutes).
-     TODO: if the text is not parsable, log an error which contains the whole imparsable text.
    */
-  if (isEmpty(queueTime) || numberOfDigitsInqueueTime>=3) {
+  if (isEmpty(queueTime)) {
     return 0;
+  }
+
+  if (numberOfDigitsInqueueTime >= MAX_NUMBER_OF_QUEUETIME_DIGITS) {
+    logger.error(`The text of queue time '${queueTime}' is not parsable. A standard '0' value will be returned. `);
+    return 0;
+  }
+
+  if (!numberOfDigitsInqueueTime) {
+    logger.error(`The text of queue time '${queueTime}' is not parsable. It doesn't contain numeric values`);
   }
 
   const HOUR_POSTFIX = 'óra';
@@ -234,9 +240,9 @@ export function extractCrossingInformation(content: string): CrossingInfo[] {
 
   const entries = zip(crossingNames, crossingOpenHours, crossingQueueTimes).map(
     ([
-      [from, to] = ['', ''],
-      [openFrom, openUntil] = ['', ''],
-      { inbound, outbound } = { inbound: EMPTY_QUEUE_TIME, outbound: EMPTY_QUEUE_TIME }
+      [from, to] = ['', ''], 
+      [openFrom, openUntil] = ['', ''], 
+      {inbound, outbound} = {inbound: EMPTY_QUEUE_TIME, outbound: EMPTY_QUEUE_TIME}
     ]) => ({
       from,
       to,
