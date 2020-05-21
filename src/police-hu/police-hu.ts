@@ -174,13 +174,17 @@ export function queueTimeToMinutes(queueTime: string): number {
     Converts the police.hu queue time string representation to a number.
     For example, calling this function with '0/2 óra' would result in 30 (minutes).
    */
-  if (numberOfDigitsInqueueTime === 0) {
-    loggerError.error(`The text of queue time '${queueTime}' is not parsable. It doesn't contain numeric values`);
+  if (isEmpty(queueTime)) {
+    return 0;
   }
 
-  if (isEmpty(queueTime) || numberOfDigitsInqueueTime>=3) {
-    loggerError.error(`The text of queue time '${queueTime}' is not parsable. A standard '0' value will be returned. `);
+  if (numberOfDigitsInqueueTime >= MAX_NUMBER_OF_QUEUETIME_DIGITS) {
+    logger.error(`The text of queue time '${queueTime}' is not parsable. A standard '0' value will be returned. `);
     return 0;
+  }
+
+  if (!numberOfDigitsInqueueTime) {
+    logger.error(`The text of queue time '${queueTime}' is not parsable. It doesn't contain numeric values`);
   }
 
   const HOUR_POSTFIX = 'óra';
