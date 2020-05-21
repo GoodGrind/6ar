@@ -37,8 +37,7 @@ export interface CrossingInfo {
   outbound: QueueTime;
 }
 
-const loggerError = Pino({level: 'error', timestamp: stdTimeFunctions.isoTime, prettyPrint: true});
-const loggerWarn = Pino({level: 'warn', timestamp: stdTimeFunctions.isoTime, prettyPrint: true});
+const logger = Pino({timestamp: stdTimeFunctions.isoTime, prettyPrint: true});
 
 export function infoUrlForCountry(country: Country): string {
   return `${POLICE_HU_INFO_BASE_URL}${CROSSING_INFO_QUERY_PARAMS[country]}`;
@@ -63,7 +62,7 @@ export function extractLocationNames(crossingText: string): [string, string] {
 
   // at this point, if we still don't have the expected number of segments something went wrong
   if (crossingParts.length < EXPECTED_NUMBER_OF_NAME_SEGMENTS) {
-    loggerError.error(`Unable to parse crossing name for text: '${crossingText}'`);
+    logger.error(`Unable to parse crossing name for text: '${crossingText}'`);
     throw new Error(`Unable to parse crossing name for text: '${text}'`);
   }
 
@@ -99,7 +98,7 @@ export function extractWorkingHours(text: string): [string, string] {
   const paddingWithZeroes = '0';
 
   if (isNaN(openParsedToFloat) || isNaN(closeParsedToFloat)) {
-    loggerWarn.warn(`Working hours are not in the right format. Text '${text}' will be parsed to a standard ['00:00','00:00'] format.`);
+    logger.warn(`Working hours are not in the right format. Text '${text}' will be parsed to a standard ['00:00','00:00'] format.`);
     return [
       '00:00',
       '00:00'
